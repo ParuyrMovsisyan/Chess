@@ -79,6 +79,8 @@ namespace ChessLibrary
                     returnList.Add(item);
                 }
             }
+            if(HasSpecialMoves(chessboard,out List<Point> spetialMoves))
+                returnList.AddRange(spetialMoves);
             return returnList;
         }
 
@@ -96,9 +98,11 @@ namespace ChessLibrary
         /// <param name="spetialPositions"></param>
         /// <returns></returns>
         public bool HasSpecialMoves(Chessboard chessboard, out List<Point> specialPositions)
-        {            
-            bool hasSpecialMoves=false;
+        {
             specialPositions = new List<Point>();
+            if (chessboard.WhoseMoves == Color)
+                return false;
+            bool hasSpecialMoves = false;
             if (!IsUnderCheck(chessboard))
             {
                 if (PreviousPositions.Count == 0)
@@ -196,7 +200,7 @@ namespace ChessLibrary
                         return true;
                     if(pos[1] == enemyPossibleMoves[j])
                         return true;
-                }                
+                } 
             }
             return false;
         }
