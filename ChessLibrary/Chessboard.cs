@@ -1,0 +1,677 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ChessLibrary
+{
+    /// <summary>
+    /// Chessboard class contains 
+    /// 1.board, it is a 8X8 char matrix:
+    /// if there is a figure in cell then board's cell value figure symbole otherwise cell value is space
+    /// 2.list of white figures
+    /// 3.list of black figures
+    /// 4.whose moves
+    /// </summary>
+    public class Chessboard
+    {
+        /// <summary>
+        /// Array of chessboard cells
+        /// </summary>
+        char[,] board=new char[8,8];
+        List<Figure> WhiteFigures=new ();
+        List<Figure> BlackFigures=new ();
+        internal List<Moves> Moves=new ();
+
+        /// <summary>
+        /// Property for chessboard
+        /// </summary>
+        public char[,] Board
+        {
+            get
+            {
+                return board;
+            }
+            set
+            {
+                board = value;
+            }
+        }
+        /// <summary>
+        /// defines whose moves
+        /// </summary>
+        FigureColorEnum whoseMoves;
+
+        /// <summary>
+        /// Propery for whose moves
+        /// </summary>
+        public FigureColorEnum WhoseMoves { get { return whoseMoves; } }
+
+        /// <summary>
+        /// Constructor: builds empty chessboard
+        /// </summary>
+        public Chessboard()
+        {
+            SetEmptyBoard();
+            BlackFigures = GetAllBlackFigures();
+            PutFigures(BlackFigures);
+            WhiteFigures = GetAllWhiteFigures();
+            PutFigures(WhiteFigures);
+        }
+
+        /// <summary>
+        /// Constructor: builds chessboard with given figures
+        /// </summary>
+        /// <param name="figures">List of figures</param>
+        internal Chessboard(List<Figure> figures)
+        {
+            SetEmptyBoard();
+            foreach (Figure figure in figures)
+            {
+                if (figure.Color == FigureColorEnum.White)
+                    WhiteFigures.Add(figure);
+                else
+                    BlackFigures.Add(figure);
+                PutFigure(figure);
+            }
+        }
+
+        /// <summary>
+        /// Constructor: builds chessboard with given figures
+        /// </summary>
+        /// <param name="wFigures">List of figures: white figures</param>
+        /// <param name="bFigures">List of figures: black figures</param>
+        public Chessboard(List<Figure> wFigures, List<Figure> bFigures) 
+        {
+            SetEmptyBoard();
+            WhiteFigures = wFigures;
+            BlackFigures = bFigures;
+            PutFigures(WhiteFigures);
+            PutFigures(BlackFigures);
+        }
+
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="chessboard"></param>
+        internal Chessboard(Chessboard chessboard):this(chessboard.GetFigures())
+        {}
+
+        /// <summary>
+        /// Constructor: builds chessboard from given board's.
+        /// This constructor can throw exception use it in try/catch statement 
+        /// </summary>
+        /// <param name="newBoard">Two dimensional character 8x8 array</param>
+        /// <param name="isWhitesTurn">Boolean, if true then game will start whites, otherwise blacks</param>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="Exception"></exception>
+        public Chessboard(char[,] newBoard, bool isWhitesTurn = true)
+        {
+            if (newBoard.GetLength(0) != 8 || newBoard.GetLength(1) != 8)
+                throw new ArgumentException("Given board is not for chess...");
+            board = newBoard;
+            List<Figure> figures = GetFigures();
+            if (figures is null)
+                throw new ArgumentException("I can not create figures from your board...");
+            else if (figures.Count == 0)
+                throw new Exception("There is not any figure");
+            else if (figures.Count < 3)
+                throw new Exception("There are few figures for starting game...");
+            else if (!Chessboard.IsTwoKingsExist(figures))
+                throw new Exception("There are more or less then two kings");
+            else
+            {
+                Chessboard chessboard = new (figures);
+                if (chessboard.WhiteFigures.Count > 16)
+                    throw new Exception("The white figures more than 16...");
+                if (chessboard.BlackFigures.Count > 16)
+                    throw new Exception("The black figures more than 16...");
+                FigureColorEnum color;
+                if (isWhitesTurn)
+                    color = FigureColorEnum.White;
+                else
+                    color = FigureColorEnum.Black;
+                chessboard.whoseMoves = color;
+                if (chessboard.IsStalemate(color))
+                    throw new Exception("This game can not be started, becouse there is alredy stalemate.");
+                else
+                {
+                    color = Chessboard.GetEnemyColor(color);
+                    if (chessboard.IsCheck(color))
+                        throw new Exception("This game can not be started, becouse the second player's is under check.");
+                }
+                whoseMoves = chessboard.WhoseMoves;
+                WhiteFigures = chessboard.WhiteFigures;
+                BlackFigures = chessboard.BlackFigures;
+            }
+        }
+
+        /// <summary>
+        /// Cheks are there to Kings
+        /// </summary>
+        /// <param name="figures">list of figures</param>
+        /// <returns>Returns true, if there are two kings and false otherwise</returns>
+        private static bool IsTwoKingsExist(List<Figure> figures)
+        {
+            bool isTwoKingsExist = false;
+            if (figures != null)
+            {
+                List<Figure> kings=new ();
+                if (figures.Count < 2)
+                    return isTwoKingsExist;
+                else
+                {
+                    foreach(Figure f in figures)
+                        if(f is King)
+                            kings.Add(f);
+                }
+                if (kings.Count != 2)
+                    return isTwoKingsExist;
+                else
+                {
+                    if(kings[0].Color!=kings[1].Color)
+                        isTwoKingsExist=true;
+                }
+            }
+            return isTwoKingsExist;
+        }
+
+        /// <summary>
+        /// Cheks is position in cheesboard
+        /// </summary>
+        /// <param name="p">Point: figure position</param>
+        /// <returns>returns true if position in chessboard, otherwise returns false</returns>
+        public static bool IsInBoard(Point p)
+        {
+            return (p.X >= 0 && p.X < 8 && p.Y >= 0 && p.Y < 8);
+        }
+
+        /// <summary>
+        /// Moves figure from start position to targetPosition.
+        /// If in target position is enemy figure removes enemy figure
+        /// </summary>
+        /// <param name="startPos">Point: start position for figure</param>
+        /// <param name="targetPos">Point: target position for figure</param>
+        public void Move(Point startPos, Point targetPos)
+        {
+            Figure figure = GetFigure(startPos);
+            if (figure is not null)
+            {
+                if (figure.Color == whoseMoves)
+                {
+                    if (figure.CanMove(targetPos, this))
+                    {
+                        var friendFigures = GetFriendFigures(figure);
+                        Figure? enemyFigure = null;
+                        if (figure is Pawn pawn)
+                        {
+                            if (pawn.HasSpecialMove(this, out Point spetialPos))
+                            {
+                                if (spetialPos == targetPos)
+                                {
+                                    enemyFigure = GetFigure(new Point(startPos.X, targetPos.Y));
+                                    Board[startPos.X, targetPos.Y] = '\u0020';
+                                }
+                            }
+                            else
+                            {
+                                enemyFigure = GetFigure(targetPos);
+                            }
+                        }
+                        else
+                        {
+                            enemyFigure = GetFigure(targetPos);
+                        }
+                        if (enemyFigure is not null)
+                        {
+                            if (enemyFigure.Color == FigureColorEnum.White)
+                                WhiteFigures = WhiteFigures.RemoveFigure(targetPos);
+                            else
+                                BlackFigures = BlackFigures.RemoveFigure(targetPos);
+                        }
+                        int i = friendFigures.IndexOf(figure.Position);
+                        friendFigures[i].PreviousPositions.Add(friendFigures[i].Position);
+                        friendFigures[i].Position = targetPos;
+                        char figureSymbol = Board[startPos.X, startPos.Y];
+                        Board[targetPos.X, targetPos.Y] = figureSymbol;
+                        Board[startPos.X, startPos.Y] = '\u0020';
+                        Moves.Add(new Moves(figureSymbol, startPos, targetPos));
+                        int distance = startPos.Y - targetPos.Y;
+                        if (figure is King && Math.Abs(distance) == 2)
+                        {
+                            int indexOfRook;
+                            Point rookStartPos;
+                            Point rookTargetPos;
+                            if (distance == 2)
+                            {
+                                rookStartPos = new Point(startPos.X, 0);
+                                rookTargetPos = new Point(startPos.X, 3);
+                            }
+                            else
+                            {
+                                rookStartPos = new Point(startPos.X, 7);
+                                rookTargetPos = new Point(startPos.X, 5);
+                            }
+                            indexOfRook = friendFigures.IndexOf(rookStartPos);
+                            friendFigures[indexOfRook].Position = rookTargetPos;
+                            friendFigures[indexOfRook].PreviousPositions.Add(rookStartPos);
+                            figureSymbol = Board[rookStartPos.X, rookStartPos.Y];
+                            Board[rookTargetPos.X, rookTargetPos.Y] = figureSymbol;
+                            Board[rookStartPos.X, rookStartPos.Y] = '\u0020';
+                            Moves.Add(new Moves(figureSymbol, rookStartPos, rookTargetPos));
+                        }
+                        whoseMoves = GetEnemyColor(WhoseMoves);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets enemy's color for given color
+        /// </summary>
+        /// <param name="color">FigureColoreEnnum</param>
+        /// <returns>FigureColorEnum: returns given color's enemy color</returns>
+        public static FigureColorEnum GetEnemyColor(FigureColorEnum color)
+        {
+            if (color == FigureColorEnum.White)
+                return FigureColorEnum.Black;
+            else
+                return FigureColorEnum.White;
+        }
+
+
+        /// <summary>
+        /// Gets figure from given position
+        /// </summary>
+        /// <returns>Figure</returns>        
+        /// <param name="p">Point: position for geting figure</param>
+        /// <returns>Figure: Returns figure if there are, otherwise returns null </returns>
+        public Figure GetFigure(Point p)
+        {
+            char c = Board[p.X, p.Y];
+            Figure? figure = c switch
+            {
+                '\u2654' => new King(FigureColorEnum.White, p),
+                '\u265A' => new King(FigureColorEnum.Black, p),
+                '\u2655' => new Queen(FigureColorEnum.White, p),
+                '\u265B' => new Queen(FigureColorEnum.Black, p),
+                '\u2656' => new Rook(FigureColorEnum.White, p),
+                '\u265C' => new Rook(FigureColorEnum.Black, p),
+                '\u2657' => new Bishop(FigureColorEnum.White, p),
+                '\u265D' => new Bishop(FigureColorEnum.Black, p),
+                '\u2658' => new Knight(FigureColorEnum.White, p),
+                '\u265E' => new Knight(FigureColorEnum.Black, p),
+                '\u2659' => new Pawn(FigureColorEnum.White, p),
+                '\u265F' => new Pawn(FigureColorEnum.Black, p),
+                _ => null,
+            };
+            return figure;
+        }
+
+        /// <summary>
+        /// Returns all figures from board
+        /// </summary>
+        /// <returns>List of Figure</returns>
+        public List<Figure> GetFigures()
+        {
+            List<Figure> figures = new ();
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (Board[i, j] != '\u0020')
+                        figures.Add(GetFigure(new Point(i, j)));
+                }
+            }
+            return figures;
+        }
+
+        /// <summary>
+        /// Gets all white figures. Figure's position is starting position
+        /// </summary>
+        /// <returns>List of figure: All white figures</returns>
+        static List<Figure> GetAllWhiteFigures()
+        {
+            var color = FigureColorEnum.White;
+            var returnWhiteFigures = new List<Figure>
+            {
+                new King(color, new Point("E1")),
+                new Queen(color, new Point("D1")),
+                new Bishop(color, new Point("C1")),
+                new Bishop(color, new Point("F1")),
+                new Knight(color, new Point("B1")),
+                new Knight(color, new Point("G1")),
+                new Rook(color, new Point("A1")),
+                new Rook(color, new Point("H1"))
+            };
+            for (int i = 0; i < 8; i++)
+            {
+                returnWhiteFigures.Add( new Pawn(color, new Point(6, i)));
+            }
+            return returnWhiteFigures;
+        }
+
+        /// <summary>
+        /// Gets all black figures. Figure's position is starting position
+        /// </summary>
+        /// <returns>List of figure: All black figures</returns>
+        static List<Figure> GetAllBlackFigures()
+        {
+            var color = FigureColorEnum.Black;
+            var returnBlackFigures = new List<Figure>
+            {
+                new King(color, new Point("E8")),
+                new Queen(color, new Point("D8")),
+                new Bishop(color, new Point("C8")),
+                new Bishop(color, new Point("F8")),
+                new Knight(color, new Point("B8")),
+                new Knight(color, new Point("G8")),
+                new Rook(color, new Point("A8")),
+                new Rook(color, new Point("H8"))
+            };
+            for (int i = 0; i < 8; i++)
+            {
+                returnBlackFigures.Add(new Pawn(color, new Point(1, i)));
+            }
+            return returnBlackFigures;
+        }
+
+        /// <summary>
+        /// Puts given figure in board
+        /// </summary>
+        /// <param name="figure">Figure</param>
+        public void PutFigure(Figure figure)
+        {
+            board[figure.Position.X, figure.Position.Y] = figure.GetSymbol();
+        }
+
+        /// <summary>
+        /// Putes given figures in board
+        /// </summary>
+        /// <param name="figures">Figure's list</param>
+        public void PutFigures(List<Figure> figures)
+        {
+            for (int i = 0; i < figures.Count; i++)
+            {
+                PutFigure(figures[i]);
+            }
+        }
+        
+        /// <summary>
+        /// Gets enemy figures for given figure
+        /// </summary>
+        /// <param name="figure">Figure</param>
+        /// <returns>List of Figure</returns>
+        public List<Figure> GetEnemyFigures(Figure figure)
+        {
+            return GetEnemyFigures(figure.Color);
+        }
+
+        /// <summary>
+        /// Gets enemy figures for given figure
+        /// </summary>
+        /// <param name="figure">Figure</param>
+        /// <returns>List of Figure</returns>
+        public List<Figure> GetEnemyFigures(FigureColorEnum color)
+        {
+            if (color == FigureColorEnum.Black)
+                return WhiteFigures;
+            else
+                return BlackFigures;
+        }
+
+        /// <summary>
+        /// Gets friend figures for given figure
+        /// </summary>
+        /// <param name="figure">Figure</param>
+        /// <returns>List of Figure</returns>
+        public List<Figure> GetFriendFigures(Figure figure)
+        {
+            return GetFriendFigures(figure.Color);
+        }
+
+        /// <summary>
+        /// Gets given color's figures
+        /// </summary>
+        /// <param name="figure">Figure's color</param>
+        /// <returns>List of Figure</returns>
+        public List<Figure> GetFriendFigures(FigureColorEnum color)
+        {
+            if (color == FigureColorEnum.White)
+                return WhiteFigures;
+            else
+                return BlackFigures;
+        }
+
+        /// <summary>
+        /// Gets own king for given figure
+        /// </summary>
+        /// <param name="figure">Figure</param>
+        /// <returns>returns figure's king</returns>
+        public King GetOwnKing(Figure figure)
+        {
+            return figure is King king ? king : GetOwnKing(figure.Color);
+        }
+
+        /// <summary>
+        /// Gets given color's king
+        /// </summary>
+        /// <param name="figure">Figure's color</param>
+        /// <returns>returns given color's king</returns>
+        public King GetOwnKing(FigureColorEnum color)
+        {
+            List<Figure> friendFigures = GetFriendFigures(color);
+            int index = -1;
+            for (int i = 0; i < friendFigures.Count; i++)
+            {
+                if (friendFigures[i] is King)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            return (King)friendFigures[index];
+        }
+
+        /// <summary>
+        /// gets is given color's king is under attack
+        /// </summary>
+        /// <param name="color">FigureColorEnum</param>
+        /// <returns>returnes true if king is under attack,false otherwise</returns>
+        public bool IsCheck(FigureColorEnum color)
+        {
+            Figure king = GetOwnKing(color);
+            if (king.IsUnderAttack(this))
+            {
+                return  true;     
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checking the given position will be under check
+        /// </summary>
+        /// <param name="position">Point: position for checking</param>
+        /// <param name="fromColors">FigureColorEnum: Attacker's color</param>
+        /// <returns>returns true if king will be under attack if king moves that position</returns>
+        public bool IsCheck(Point position, FigureColorEnum fromColors)
+        {
+            King king = GetOwnKing(GetEnemyColor(fromColors));
+            Chessboard fakeChessboard = new (this);
+            fakeChessboard.board[king.Position.X, king.Position.Y] = '\u0020';
+            fakeChessboard.board[position.X, position.Y] = king.GetSymbol();
+            List<Figure> figures =fakeChessboard.GetFriendFigures(fromColors);
+            foreach (Figure figure in figures)
+            {
+                foreach (Point pos in figure.GetAllPossibleMoves(fakeChessboard))
+                {
+                    if (pos==position)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets is checkmate for given color's player.
+        /// A player is checkmated when on his turn he has no legal move and is in check
+        /// </summary>
+        /// <param name="color">player's color</param>
+        /// <returns>returns true if stalemate, false otherwise</returns>
+        public bool IsCheckmate(FigureColorEnum color)
+        {
+            bool isCheckmate = false;
+            if (IsCheck(color))
+            {
+                isCheckmate = true;
+                foreach (Figure figure in GetFriendFigures(color))
+                {
+                    if (figure.HasMove(this))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return isCheckmate;
+        }
+
+        /// <summary>
+        /// Cheks is pawn reaches end of board
+        /// </summary>
+        /// <returns>return true if is time to change pawn to onother figure</returns>
+        public bool IsTimeToPromotionPawn()
+        {
+            bool isTime = false;
+            if(Moves.Count==0)
+                return isTime;
+            Moves move = Moves[^1];//Moves.Count - 1
+            bool isPawn=false;
+            if(move.FigureSymbol=='\u2659'||move.FigureSymbol=='\u265F')
+                isPawn=true;
+            if (isPawn)
+            {
+                if(move.EndPos.X==0||move.EndPos.X==7)
+                    isTime=true;
+            }
+            return isTime;
+        }
+                
+        /// <summary>
+        /// Gets is stalemate for given color's player. 
+        /// A player is stalemated when on his turn he has no legal move but is not in check
+        /// </summary>
+        /// <param name="col">player's color</param>
+        /// <returns>returns true if stalemate, false otherwise</returns>
+        public bool IsStalemate(FigureColorEnum color)
+        {
+            bool isStalemate = false;
+            if (!IsCheck(color))
+            {
+                isStalemate = true;
+                foreach (Figure figure in GetFriendFigures(color))
+                {
+                    if (figure.HasMove(this))
+                    {
+                        isStalemate = false;
+                        break;
+                    }
+                }
+            }
+            return isStalemate;
+        }
+
+        /// <summary>
+        /// Pawn promotions to given figure
+        /// It is a great feat for a Pawn to get all the way to the other side of the board 
+        /// (8th rank for white and 1st rank for black). 
+        /// Because of this, is a brave little Pawn manages to get that far, they are rewarded with a promotion.
+        /// A player that manages to get it’s Pawn all the way to the other side of the board 
+        /// may transform that Pawn into any piece they want (most players chose a Queen).
+        /// </summary>
+        /// <param name="changeTo">string: Figure name for changing pawn</param>
+        /// <exception cref="ArgumentOutOfRangeException">throws exeption if given parameter can not be changable figure</exception>
+        public void PawnPromotionTo(string changeTo)
+        {
+            List<Figure> figures = GetEnemyFigures(whoseMoves);
+            int index = figures.IndexOf(Moves[^1].EndPos);//Moves.Count - 1
+            if (index != -1)
+            {
+                if (figures[index] is Pawn pawn)
+                {
+                    Figure figure = changeTo switch
+                    {
+                        "Queen" => ChangeToQueen(pawn),
+                        "Rook" => ChangeToRook(pawn),
+                        "Knight" => ChangeToKnight(pawn),
+                        "Bishop" => ChangeToBishop(pawn),
+                        _ => throw new ArgumentOutOfRangeException($"Oops something wrong, Pawn can not be changed to {changeTo}..." ),
+                    };
+                    figure.PreviousPositions = pawn.PreviousPositions;
+                    Moves.Add(new Moves(figure.GetSymbol(), figure.Position, figure.Position));
+                    PutFigure(figure);
+                    figures[index] = figure;
+                }
+            }
+            
+        }
+
+        /// <summary>
+        /// changes pawn to queen
+        /// </summary>
+        /// <param name="pawn">Pawn</param>
+        /// <returns>Queen: Returns queen in pawn's position with pawn's color and previous moves </returns>
+        public static Queen ChangeToQueen(Pawn pawn)
+        {
+            Queen queen = new (pawn.Color, pawn.Position);
+            return queen;                     
+        }
+
+        /// <summary>
+        /// changes pawn to rook
+        /// </summary>
+        /// <param name="pawn">Pawn</param>
+        /// <returns>Rook: Returns rook in pawn's position with pawn's color and previous moves </returns>
+        public static Rook ChangeToRook(Pawn pawn)
+        {
+            Rook rook = new (pawn.Color, pawn.Position);
+            return rook;
+        }
+
+        /// <summary>
+        /// changes pawn to bishop
+        /// </summary>
+        /// <param name="pawn">Pawn</param>
+        /// <returns>Bishop: Returns bishop in pawn's position with pawn's color and previous moves </returns>
+        public static Bishop ChangeToBishop(Pawn pawn)
+        {
+            Bishop bishop = new (pawn.Color, pawn.Position);
+            return bishop;
+        }
+
+        /// <summary>
+        /// changes pawn to knight
+        /// </summary>
+        /// <param name="pawn">Pawn</param>
+        /// <returns>Knight: Returns knight in pawn's position with pawn's color and previous moves </returns>
+        public static Knight ChangeToKnight(Pawn pawn)
+        {
+            Knight knight = new (pawn.Color, pawn.Position);
+            return knight;
+        }
+
+        /// <summary>
+        /// Sets '\u0020' to each item in board
+        /// </summary>
+        public void SetEmptyBoard()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    board[i, j] = '\u0020';
+                }
+            }
+        }
+    }
+}

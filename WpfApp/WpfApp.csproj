@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="BlackChessboard.png" />
+    <None Remove="blob.jpg" />
+    <None Remove="Chessboard.png" />
+    <None Remove="Figures\BBishop.gif" />
+    <None Remove="Figures\BKing.gif" />
+    <None Remove="Figures\BKnight.gif" />
+    <None Remove="Figures\BPawn.gif" />
+    <None Remove="Figures\BQueen.gif" />
+    <None Remove="Figures\BRook.gif" />
+    <None Remove="Figures\WBishop.gif" />
+    <None Remove="Figures\WKing.gif" />
+    <None Remove="Figures\WKnight.gif" />
+    <None Remove="Figures\WPawn.gif" />
+    <None Remove="Figures\WQueen.gif" />
+    <None Remove="Figures\WRook.gif" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameLibrary\GameLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="BlackChessboard.png" />
+    <Resource Include="Figures\BBishop.gif" />
+    <Resource Include="Figures\BKing.gif" />
+    <Resource Include="Figures\BKnight.gif" />
+    <Resource Include="Figures\BPawn.gif" />
+    <Resource Include="Figures\BQueen.gif" />
+    <Resource Include="Figures\BRook.gif" />
+    <Resource Include="Figures\WBishop.gif" />
+    <Resource Include="Figures\WKing.gif" />
+    <Resource Include="Figures\WKnight.gif" />
+    <Resource Include="Figures\WPawn.gif" />
+    <Resource Include="Figures\WQueen.gif" />
+    <Resource Include="Figures\WRook.gif" />
+  </ItemGroup>
+
+</Project>
