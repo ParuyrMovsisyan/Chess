@@ -16,22 +16,22 @@ using GameLibrary;
 using System.Media;
 
 namespace WpfApp
-{    
+{
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         private Game game;
-        public Game Game 
-        { 
+        public Game Game
+        {
             get { return game; }
             set { game = value; }
         }
         public MainWindow()
         {
             InitializeComponent();
-            NewGame_Click(new Object(),new RoutedEventArgs());
+            NewGame_Click(new Object(), new RoutedEventArgs());
         }
 
         public MainWindow(Game game)
@@ -46,7 +46,7 @@ namespace WpfApp
         /// Puts figures
         /// </summary>
         public void PutFigures()
-        {            
+        {
             char[,] board = game.GetBoard();
             for (int i = 0; i < 8; i++)
             {
@@ -56,11 +56,11 @@ namespace WpfApp
                     if (c != '\u0020')
                     {
                         Image image = HelperMethods.CreateImage(c, i, j);
-                        Grid1.Children.Add(image); 
-                    }                    
+                        Grid1.Children.Add(image);
+                    }
                 }
             }
-        }        
+        }
 
         /// <summary>
         /// When pressing mouse left button on chessboard if start position is empty 
@@ -74,13 +74,13 @@ namespace WpfApp
             Point mousePos = e.GetPosition(this);
             if (mousePos.X >= 80 && mousePos.X < 400 && mousePos.Y >= 64 && mousePos.Y < 384)
             {
-                Position position = new (mousePos);
+                Position position = new(mousePos);
                 string pos = position.ToString();
                 if (pos != string.Empty)
                 {
                     if (StartTextBox.Text == string.Empty)
                     {
-                        if(game.IsRightChosen(pos))
+                        if (game.IsRightChosen(pos))
                             StartTextBox.Text = pos;
                     }
                     else
@@ -94,7 +94,6 @@ namespace WpfApp
                     }
                 }
             }
-                
         }
         void Move()
         {
@@ -105,6 +104,8 @@ namespace WpfApp
                 else
                 {
                     autogame.Think();
+                    if (autogame.IsTimeToPromotionPawn && autogame.autoPlayerColor.ToString() != autogame.WhoseMoves)
+                        game.PawnPromotionTo("Queen");
                 }
             }
             else
@@ -112,16 +113,9 @@ namespace WpfApp
                 game.Move(StartTextBox.Text, TargetTextBox.Text);
             }
             if (game.IsTimeToPromotionPawn)
-            {                
-                if (game is AutoGame)
-                {
-                    game.PawnPromotionTo("Queen");
-                }
-                else
-                {
-                    PawnChangeToWindow window = new();
-                    window.ShowDialog();
-                }
+            {
+                PawnChangeToWindow window = new();
+                window.ShowDialog();
             }
             CreateWindow();
             if (game.IsUnderCheck())
@@ -196,7 +190,7 @@ namespace WpfApp
                     SystemSounds.Beep.Play();
                     MessageBox.Show("Check");
                 }
-            }           
+            }
             else if (game.IsStalemate())
             {
                 SystemSounds.Beep.Play();
@@ -233,7 +227,7 @@ namespace WpfApp
         /// <param name="e"></param>
         public void NewGame_Click(object sender, RoutedEventArgs e)
         {
-            game = new AutoGame();            
+            game = new AutoGame();
             CreateWindow();
             PutFigures();
         }
