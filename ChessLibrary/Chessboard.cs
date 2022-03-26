@@ -397,16 +397,6 @@ namespace ChessLibrary
                 PutFigure(figures[i]);
             }
         }
-        
-        /// <summary>
-        /// Gets enemy figures for given figure
-        /// </summary>
-        /// <param name="figure">Figure</param>
-        /// <returns>List of Figure</returns>
-        public List<Figure> GetEnemyFigures(Figure figure)
-        {
-            return GetEnemyFigures(figure.Color);
-        }
 
         /// <summary>
         /// Gets enemy figures for given figure
@@ -442,16 +432,6 @@ namespace ChessLibrary
                 return WhiteFigures;
             else
                 return BlackFigures;
-        }
-
-        /// <summary>
-        /// Gets own king for given figure
-        /// </summary>
-        /// <param name="figure">Figure</param>
-        /// <returns>returns figure's king</returns>
-        public King GetOwnKing(Figure figure)
-        {
-            return figure is King king ? king : GetOwnKing(figure.Color);
         }
 
         /// <summary>

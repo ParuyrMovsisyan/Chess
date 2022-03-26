@@ -10,7 +10,7 @@ namespace GameLibrary
     /// <summary>
     /// For playing with computer
     /// </summary>
-    public class AutoGame:Game
+    public class AutoGame : Game
     {
         /// <summary>
         /// Auto player's color
@@ -21,7 +21,7 @@ namespace GameLibrary
         /// Constructor
         /// </summary>
         /// <param name="color">color for autoplayer, default value is white</param>
-        public AutoGame(int color=0):base()
+        public AutoGame(int color = 0) : base()
         {
             autoPlayerColor = (FigureColorEnum)color;
             if (autoPlayerColor == FigureColorEnum.White)
@@ -37,12 +37,12 @@ namespace GameLibrary
             List<PossibleMove> possibleMoves = new();
             foreach (Figure figure in Chessboard.GetFriendFigures(autoPlayerColor))
             {
-                List<Point> targetPos=figure.GetAllPossibleMoves(Chessboard);
+                List<Point> targetPos = figure.GetAllPossibleMoves(Chessboard);
                 if (targetPos.Count > 0)
-                {
-                    PossibleMove possibleMove = new();
+                {                    
                     foreach (var pos in targetPos)
                     {
+                        PossibleMove possibleMove = new();
                         if (figure.CanMove(pos, Chessboard))
                         {
                             possibleMove.StartPoint = figure.Position;
@@ -51,14 +51,11 @@ namespace GameLibrary
                             if (Chessboard.Board[pos.X, pos.Y] != '\u0020')
                             {
                                 possibleMove.EnemyWeight = Chessboard.GetFigure(pos).Weight;
-                            }
-                            else
-                            {
-                                possibleMove.EnemyWeight = 0;
-                            }
+                            }                            
+                            possibleMove.EffectiveWeight = figure.CanBeEatenIfMove(pos, Chessboard) ? (possibleMove.EnemyWeight - possibleMove.MyWeight) : possibleMove.EnemyWeight;
                             possibleMoves.Add(possibleMove);
-                        }                        
-                    }                    
+                        }
+                    }
                 }
             }
             if (possibleMoves.Count > 0)
@@ -74,17 +71,17 @@ namespace GameLibrary
         /// <param name="possibleMoves"></param>
         /// <returns></returns>
         static PossibleMove ChooseWhatToPlay(List<PossibleMove> possibleMoves)
-        {            
+        {
             var query1 = from e in possibleMoves
-                         where e.EnemyWeight == possibleMoves.Max(e => e.EnemyWeight)
+                         where e.EnemyWeight == possibleMoves.Max(e => e.EffectiveWeight)
                          select e;
             if (query1.Count() > 1)
             {
-                Random random = new ();
-                int i=random.Next(0, query1.Count());
+                Random random = new();
+                int i = random.Next(0, query1.Count());
                 return query1.ElementAt(i);
             }
-            else 
+            else
                 return query1.Single();
         }
     }

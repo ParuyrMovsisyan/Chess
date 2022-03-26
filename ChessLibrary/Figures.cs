@@ -176,7 +176,8 @@
             {
                 Chessboard fakeChessboard = new(chessboard);
                 fakeChessboard.Move(Position, trgPos);
-                return CanBeEaten(fakeChessboard);
+                var fakeFigure = fakeChessboard.GetFigure(trgPos);
+                return fakeFigure.CanBeEaten(fakeChessboard);
             }
             return false;
         }

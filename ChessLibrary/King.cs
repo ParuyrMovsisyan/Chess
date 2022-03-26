@@ -100,7 +100,7 @@ namespace ChessLibrary
         public bool HasSpecialMoves(Chessboard chessboard, out List<Point> specialPositions)
         {
             specialPositions = new List<Point>();
-            if (chessboard.WhoseMoves == Color)
+            if (chessboard.WhoseMoves != Color)
                 return false;
             bool hasSpecialMoves = false;
             if (!IsUnderCheck(chessboard))

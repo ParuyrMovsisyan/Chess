@@ -13,5 +13,6 @@ namespace GameLibrary
         public Point EndPoint;
         public int EnemyWeight;
         public int MyWeight;
+        public int EffectiveWeight;
     }
 }
