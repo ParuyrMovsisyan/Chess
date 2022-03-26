@@ -490,30 +490,6 @@ namespace ChessLibrary
         }
 
         /// <summary>
-        /// Checking the given position will be under check
-        /// </summary>
-        /// <param name="position">Point: position for checking</param>
-        /// <param name="fromColors">FigureColorEnum: Attacker's color</param>
-        /// <returns>returns true if king will be under attack if king moves that position</returns>
-        public bool IsCheck(Point position, FigureColorEnum fromColors)
-        {
-            King king = GetOwnKing(GetEnemyColor(fromColors));
-            Chessboard fakeChessboard = new (this);
-            fakeChessboard.board[king.Position.X, king.Position.Y] = '\u0020';
-            fakeChessboard.board[position.X, position.Y] = king.GetSymbol();
-            List<Figure> figures =fakeChessboard.GetFriendFigures(fromColors);
-            foreach (Figure figure in figures)
-            {
-                foreach (Point pos in figure.GetAllPossibleMoves(fakeChessboard))
-                {
-                    if (pos == position)
-                        return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Gets is checkmate for given color's player.
         /// A player is checkmated when on his turn he has no legal move and is in check
         /// </summary>

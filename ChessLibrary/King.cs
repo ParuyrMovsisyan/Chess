@@ -79,7 +79,6 @@ namespace ChessLibrary
                     returnList.Add(item);
                 }
             }
-
             return returnList;
         }
 
@@ -97,8 +96,7 @@ namespace ChessLibrary
         /// <param name="spetialPositions"></param>
         /// <returns></returns>
         public bool HasSpecialMoves(Chessboard chessboard, out List<Point> specialPositions)
-        {
-            
+        {            
             bool hasSpecialMoves=false;
             specialPositions = new List<Point>();
             if (!IsUnderCheck(chessboard))
@@ -106,6 +104,7 @@ namespace ChessLibrary
                 if (PreviousPositions.Count == 0)
                 {
                     List<Figure> friendFigures=chessboard.GetFriendFigures(Color);
+                    var points = new Point[2];
                     int index = friendFigures.IndexOf(new Point(Position.X, 0));
                     if (index >= 0)
                     {
@@ -118,9 +117,9 @@ namespace ChessLibrary
                                     && chessboard.Board[Position.X, 2] == '\u0020'
                                     && chessboard.Board[Position.X, 3] == '\u0020')
                                 {
-                                    FigureColorEnum enemyColor = Chessboard.GetEnemyColor(Color);
-                                    if (chessboard.IsCheck(new Point(Position.X, 3), enemyColor) == false
-                                        && chessboard.IsCheck(new Point(Position.X, 2), enemyColor) == false)
+                                    points[0] = new Point(Position.X, 2);
+                                    points[1]= new Point(Position.X, 3);
+                                    if(!IsUnderAttack(points,chessboard))
                                     {
                                         specialPositions.Add(new Point(Position.X, 2));
                                     }    
@@ -139,9 +138,9 @@ namespace ChessLibrary
                                 if (chessboard.Board[Position.X, 5] == '\u0020'
                                     && chessboard.Board[Position.X, 6] == '\u0020')
                                 {
-                                    FigureColorEnum enemyColor = Chessboard.GetEnemyColor(Color);
-                                    if (chessboard.IsCheck(new Point(Position.X, 5), enemyColor) == false
-                                        && chessboard.IsCheck(new Point(Position.X, 6), enemyColor) == false)
+                                    points[0] = new Point(Position.X, 5);
+                                    points[1] = new Point(Position.X, 6);
+                                    if (!IsUnderAttack(points, chessboard))
                                     {
                                         specialPositions.Add(new Point(Position.X, 6));
                                     }
@@ -176,6 +175,30 @@ namespace ChessLibrary
                 }
             }
             return isUnderAttack;
+        }
+
+        /// <summary>
+        /// Checking the given position will be under check 
+        /// </summary>
+        /// <param name="position">array of Point: positions for checking</param>
+        /// <param name="chessboard">Chessboard:state of game</param>
+        /// <returns>returns true if king will be under attack if king moves that positions</returns>
+        public bool IsUnderAttack(Point[] pos, Chessboard chessboard)
+        {
+            var enemies= chessboard.GetEnemyFigures(Color);
+            List<Point> enemyPossibleMoves;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                enemyPossibleMoves = enemies[i].GetAllPossibleMoves(chessboard);
+                for (int j = 0; j < enemyPossibleMoves.Count; j++)
+                {
+                    if (pos[0] == enemyPossibleMoves[j])
+                        return true;
+                    if(pos[1] == enemyPossibleMoves[j])
+                        return true;
+                }                
+            }
+            return false;
         }
     }
 }

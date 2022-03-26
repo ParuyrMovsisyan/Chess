@@ -33,7 +33,7 @@ namespace GameLibrary
         /// </summary>
         public void Think()
         {
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
             List<PossibleMove> possibleMoves = new();
             foreach (Figure figure in Chessboard.GetFriendFigures(autoPlayerColor))
             {
@@ -84,7 +84,7 @@ namespace GameLibrary
                 int i=random.Next(0, query1.Count());
                 return query1.ElementAt(i);
             }
-            else //if(query1.Count()==1)
+            else 
                 return query1.Single();
         }
     }
