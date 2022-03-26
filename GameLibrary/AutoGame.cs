@@ -37,8 +37,8 @@ namespace GameLibrary
             List<PossibleMove> possibleMoves = new();
             foreach (Figure figure in Chessboard.GetFriendFigures(autoPlayerColor))
             {
-                Point[] targetPos=figure.GetAllPossibleMoves(Chessboard);
-                if (targetPos.Length > 0)
+                List<Point> targetPos=figure.GetAllPossibleMoves(Chessboard);
+                if (targetPos.Count > 0)
                 {
                     PossibleMove possibleMove = new();
                     foreach (var pos in targetPos)

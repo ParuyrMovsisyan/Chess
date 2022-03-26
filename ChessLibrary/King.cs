@@ -22,10 +22,22 @@ namespace ChessLibrary
         }
 
         /// <summary>
+        /// implements GetSymbol method from Figure abstract class
+        /// </summary>
+        /// <returns>char: figure symbol</returns>
+        public override char GetSymbol()
+        {
+            if (Color == FigureColorEnum.White)
+                return '\u2654';
+            else
+                return '\u265A';
+        }
+
+        /// <summary>
         /// Gets all possible moves
         /// </summary>
         /// <returns>Array of possible moves positiones</returns>
-        public override Point[] GetAllPossibleMoves(Chessboard chessboard)
+        public override List<Point> GetAllPossibleMoves(Chessboard chessboard)
         {
             List<Point> movesList = new();
             Point pos = new (Position.X - 1, Position.Y - 1);
@@ -67,8 +79,8 @@ namespace ChessLibrary
                     returnList.Add(item);
                 }
             }
-            Point[] moves = returnList.ToArray();
-            return moves;
+
+            return returnList;
         }
 
         /// <summary>
@@ -89,7 +101,7 @@ namespace ChessLibrary
             
             bool hasSpecialMoves=false;
             specialPositions = new List<Point>();
-            if (!IsUnderAttack(chessboard))
+            if (!IsUnderCheck(chessboard))
             {
                 if (PreviousPositions.Count == 0)
                 {
@@ -145,15 +157,28 @@ namespace ChessLibrary
         }
 
         /// <summary>
-        /// implements GetSymbol method from Figure abstract class
+        /// Cheks is king under enemy's attacks
         /// </summary>
-        /// <returns>char: figure symbol</returns>
-        public override char GetSymbol()
+        /// <param name="chessboard">Chessboard</param>
+        /// <returns>returns true if king  is under attack, false otherwise</returns>
+        public bool IsUnderCheck(Chessboard chessboard)
         {
-            if (Color == FigureColorEnum.White)
-                return '\u2654';
-            else
-                return '\u265A';
+            bool isUnderAttack = false;
+            List<Figure> enemyFigures = chessboard.GetEnemyFigures(Color);
+            foreach (Figure enemyFigure in enemyFigures)
+            {
+                foreach (Point pos in enemyFigure.GetAllPossibleMoves(chessboard))
+                {
+                    if (pos == Position)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return isUnderAttack;
         }
     }
 }
+
+
+    

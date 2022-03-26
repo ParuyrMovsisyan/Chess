@@ -25,7 +25,7 @@ namespace ChessLibrary
         /// Gets all possible moves
         /// </summary>
         /// <returns>Array of possible moves positiones</returns>
-        public override Point[] GetAllPossibleMoves(Chessboard chessboard)
+        public override List<Point> GetAllPossibleMoves(Chessboard chessboard)
         {
             int x = Position.X;
             int y = Position.Y;
@@ -38,8 +38,7 @@ namespace ChessLibrary
             movesPoints[5] = new Point(x - 2, y + 1);
             movesPoints[6] = new Point(x + 2, y - 1);
             movesPoints[7] = new Point(x + 2, y + 1);
-            int index = 0;
-            Point[] tempPoints = new Point[8];
+            List<Point> tempPoints = new ();
             for (int i = 0; i < 8; i++)
             {
                 if (Chessboard.IsInBoard(movesPoints[i]))
@@ -49,21 +48,11 @@ namespace ChessLibrary
                     { }
                     else
                     {
-                        tempPoints[index] = movesPoints[i];
-                        index++;
+                        tempPoints.Add( movesPoints[i]);
                     }                    
                 }
             }
-            if (index == 8)
-            {
-                return tempPoints;
-            }
-            else
-            {
-                Point[] returnPoints = new Point[index];
-                Array.Copy(tempPoints, returnPoints, index);
-                return returnPoints;
-            }
+            return tempPoints;
         }
 
         /// <summary>

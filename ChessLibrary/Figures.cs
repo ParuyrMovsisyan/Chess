@@ -67,7 +67,7 @@
         /// Gets all possible moves
         /// </summary>
         /// <returns>Array of possible moves positiones</returns>
-        public abstract Point[] GetAllPossibleMoves(Chessboard chessboard);
+        public abstract List<Point> GetAllPossibleMoves(Chessboard chessboard);
 
         /// <summary>
         /// returnes true if figure can move from start position to finish position
@@ -80,16 +80,7 @@
             bool canMove = false;
             bool isTargetInPossibleMoves=false;
             bool hasSpetialMove = false ;
-            if (this is Pawn pawn)
-            {
-                hasSpetialMove = pawn.HasSpecialMove(chessboard, out Point spetialPos);
-                if (hasSpetialMove)
-                {
-                    if (spetialPos.Equals(targetPos))
-                        isTargetInPossibleMoves = true;
-                }
-            }
-            else if (this is King king)
+            if (this is King king)
             {
                 if (king.color == chessboard.WhoseMoves)
                 {
@@ -101,8 +92,17 @@
                                 return true;
                         }
                     }
-                }                
+                }
             }
+            else if (this is Pawn pawn)
+            {
+                hasSpetialMove = pawn.HasSpecialMove(chessboard, out Point spetialPos);
+                if (hasSpetialMove)
+                {
+                    if (spetialPos.Equals(targetPos))
+                        isTargetInPossibleMoves = true;
+                }
+            }            
             if (!isTargetInPossibleMoves)
             {
                 foreach (var item in GetAllPossibleMoves(chessboard))
@@ -136,8 +136,10 @@
                     int index = friendFigures.IndexOf(Position);
                     friendFigures[index].Position = targetPos;
                 }
-                King king = fakeChessboard.GetOwnKing(Color);
-                bool isCheck = king.IsUnderAttack(fakeChessboard);
+                king = fakeChessboard.GetOwnKing(Color);
+                //if(this is King)
+                //    king.Position = targetPos;
+                bool isCheck = king.IsUnderCheck(fakeChessboard);
                 if (isCheck == false)
                 {
                     canMove = true;
@@ -147,25 +149,36 @@
         }
 
         /// <summary>
-        /// Cheks is figure under enemy's attacks
+        /// Checks can be eaten by enemies
         /// </summary>
-        /// <param name="chessboard">Chessboard</param>
-        /// <returns>returns true if figure is under attack, false otherwise</returns>
-        public bool IsUnderAttack(Chessboard chessboard)
+        /// <param name="chessboard">Chessboard: state of game</param>
+        /// <returns></returns>
+        public bool CanBeEaten(Chessboard chessboard)
         {
-            bool isUnderAttack=false;
-            List<Figure> enemyFigures = chessboard.GetEnemyFigures(Color);
-            foreach (Figure enemyFigure in enemyFigures)
+            var enemies=chessboard.GetEnemyFigures(Color);
+            foreach (var figure in enemies)
             {
-                foreach (Point pos in enemyFigure.GetAllPossibleMoves(chessboard))
-                {
-                    if (pos == Position)
-                    {
-                        return true;
-                    }
-                }
+                if(figure.CanMove(Position,chessboard))
+                    return true;
             }
-            return isUnderAttack;
+            return false;
+        }
+
+        /// <summary>
+        /// Checks can be eaten if figure moves to target position
+        /// </summary>
+        /// <param name="trgPos">Point: position for move</param>
+        /// <param name="chessboard">Chessboard: state of game</param>
+        /// <returns>true if figure can move target position and enemy can eat, otherwise returns false </returns>
+        public bool CanBeEatenIfMove(Point trgPos, Chessboard chessboard)
+        {
+            if (CanMove(trgPos, chessboard))
+            {
+                Chessboard fakeChessboard = new(chessboard);
+                fakeChessboard.Move(Position, trgPos);
+                return CanBeEaten(fakeChessboard);
+            }
+            return false;
         }
 
         /// <summary>

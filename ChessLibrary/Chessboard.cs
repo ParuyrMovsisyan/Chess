@@ -481,8 +481,8 @@ namespace ChessLibrary
         /// <returns>returnes true if king is under attack,false otherwise</returns>
         public bool IsCheck(FigureColorEnum color)
         {
-            Figure king = GetOwnKing(color);
-            if (king.IsUnderAttack(this))
+            var king = GetOwnKing(color);
+            if (king.IsUnderCheck(this))
             {
                 return  true;     
             }
@@ -506,7 +506,7 @@ namespace ChessLibrary
             {
                 foreach (Point pos in figure.GetAllPossibleMoves(fakeChessboard))
                 {
-                    if (pos==position)
+                    if (pos == position)
                         return true;
                 }
             }

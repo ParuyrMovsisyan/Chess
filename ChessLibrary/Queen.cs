@@ -25,23 +25,14 @@ namespace ChessLibrary
         /// Gets all possible moves
         /// </summary>
         /// <returns>Array of possible moves positiones</returns>
-        public override Point[] GetAllPossibleMoves(Chessboard chessboard)
+        public override List<Point> GetAllPossibleMoves(Chessboard chessboard)
         {
+
             Rook rook = new(Color, Position);
-            Point[] ortogonals = rook.GetAllPossibleMoves(chessboard);
+            List<Point> moves = rook.GetAllPossibleMoves(chessboard);
             Bishop bishop = new(Color, Position);
-            Point[] diagonals = bishop.GetAllPossibleMoves(chessboard);
-            int length = diagonals.Length + ortogonals.Length;
-            Point[] pos = new Point[length];
-            for (int i = 0; i < diagonals.Length; i++)
-            {
-                pos[i] = diagonals[i];
-            }
-            for (int i = 0; i < ortogonals.Length; i++)
-            {
-                pos[diagonals.Length + i] = ortogonals[i];
-            }
-            return pos;
+            moves.AddRange(bishop.GetAllPossibleMoves(chessboard));
+            return moves;
         }
 
         /// <summary>

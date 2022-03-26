@@ -25,7 +25,7 @@ namespace ChessLibrary
         /// Gets all possible moves
         /// </summary>
         /// <returns>Array of possible moves positiones</returns>
-        public override Point[] GetAllPossibleMoves(Chessboard chessboard)
+        public override List<Point> GetAllPossibleMoves(Chessboard chessboard)
         {
             List<Point> movesList = new();
             Point p;
@@ -85,8 +85,7 @@ namespace ChessLibrary
                     break;
                 }
             }
-            Point[] moves = movesList.ToArray();
-            return moves;
+            return movesList;
         }
 
         /// <summary>

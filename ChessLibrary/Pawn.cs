@@ -25,7 +25,7 @@ namespace ChessLibrary
         /// Gets all possible moves
         /// </summary>
         /// <returns>Array of possible moves positiones</returns>
-        public override Point[] GetAllPossibleMoves(Chessboard chessboard)
+        public override List<Point> GetAllPossibleMoves(Chessboard chessboard)
         {
             List<Point> movesList = new();
             int moveDirection;
@@ -53,8 +53,10 @@ namespace ChessLibrary
                 movesList.Add(p);
             p = new (Position.X + moveDirection, Position.Y + 1);
             if (Chessboard.IsInBoard(p) && chessboard.Board[p.X, p.Y] != '\u0020' && chessboard.GetFigure(p).Color != Color)
-                movesList.Add(p);            
-            return movesList.ToArray();
+                movesList.Add(p);
+            if (HasSpecialMove(chessboard, out Point pos))
+                movesList.Add(pos);
+            return movesList;
         }
 
         /// <summary>
