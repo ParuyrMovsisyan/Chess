@@ -103,9 +103,7 @@ namespace WpfApp
                     game.Move(StartTextBox.Text, TargetTextBox.Text);
                 else
                 {
-                    autogame.Think();
-                    if (autogame.IsTimeToPromotionPawn && autogame.autoPlayerColor.ToString() != autogame.WhoseMoves)
-                        game.PawnPromotionTo("Queen");
+                    autogame.Think();                    
                 }
             }
             else
@@ -114,8 +112,21 @@ namespace WpfApp
             }
             if (game.IsTimeToPromotionPawn)
             {
-                PawnChangeToWindow window = new();
-                window.ShowDialog();
+                if (game is AutoGame autogame1)
+                {
+                    if(autogame1.autoPlayerColor.ToString() != autogame1.WhoseMoves)
+                        game.PawnPromotionTo("Queen");
+                    else
+                    {
+                        PawnChangeToWindow window = new();
+                        window.ShowDialog();
+                    }
+                }
+                else
+                {
+                    PawnChangeToWindow window = new();
+                    window.ShowDialog();
+                }
             }
             CreateWindow();
             if (game.IsUnderCheck())

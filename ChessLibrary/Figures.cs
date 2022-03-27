@@ -173,6 +173,7 @@
         public bool CanBeEatenIfMove(Point trgPos, Chessboard chessboard)
         {
             if (CanMove(trgPos, chessboard))
+            
             {
                 Chessboard fakeChessboard = new(chessboard);
                 fakeChessboard.Move(Position, trgPos);

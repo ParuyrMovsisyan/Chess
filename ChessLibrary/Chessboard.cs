@@ -31,7 +31,7 @@ namespace ChessLibrary
         /// <summary>
         /// List of moves
         /// </summary>
-        internal List<Move> Moves=new ();
+        public List<Move> Moves { get; private set; } = new();
 
         /// <summary>
         /// Property for chessboard
@@ -104,8 +104,11 @@ namespace ChessLibrary
         /// Copy constructor
         /// </summary>
         /// <param name="chessboard"></param>
-        internal Chessboard(Chessboard chessboard):this(chessboard.GetFigures())
-        {}
+        public Chessboard(Chessboard chessboard):this(chessboard.GetFigures())
+        {
+            foreach( var move in chessboard.Moves)
+                Moves.Add(move);
+        }
 
         /// <summary>
         /// Constructor: builds chessboard from given board's.
@@ -142,8 +145,10 @@ namespace ChessLibrary
                 else
                     color = FigureColorEnum.Black;
                 chessboard.whoseMoves = color;
-                if (chessboard.IsStalemate(color))
-                    throw new Exception("This game can not be started, becouse there is alredy stalemate.");
+                if (chessboard.IsDraw())
+                    throw new Exception("This game can not be started, becouse there is alredy draw.");
+                else if(chessboard.IsCheckmate(color))
+                    throw new Exception("This game can not be started, becouse there is alredy checkmate.");
                 else
                 {
                     color = Chessboard.GetEnemyColor(color);

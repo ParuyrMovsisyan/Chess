@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChessLibrary
 {
-    internal class Move
+    public class Move
     {
         /// <summary>
         /// Figure's symbol
