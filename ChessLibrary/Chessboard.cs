@@ -20,9 +20,18 @@ namespace ChessLibrary
         /// Array of chessboard cells
         /// </summary>
         char[,] board=new char[8,8];
+        /// <summary>
+        /// List of white figures
+        /// </summary>
         List<Figure> WhiteFigures=new ();
+        /// <summary>
+        /// List of black figures
+        /// </summary>
         List<Figure> BlackFigures=new ();
-        internal List<Moves> Moves=new ();
+        /// <summary>
+        /// List of moves
+        /// </summary>
+        internal List<Move> Moves=new ();
 
         /// <summary>
         /// Property for chessboard
@@ -196,6 +205,7 @@ namespace ChessLibrary
         public void Move(Point startPos, Point targetPos)
         {
             Figure figure = GetFigure(startPos);
+            char eatenFigureSymbol = '\u0020';
             if (figure is not null)
             {
                 if (figure.Color == whoseMoves)
@@ -211,6 +221,7 @@ namespace ChessLibrary
                                 if (spetialPos == targetPos)
                                 {
                                     enemyFigure = GetFigure(new Point(startPos.X, targetPos.Y));
+                                    eatenFigureSymbol = Board[startPos.X, targetPos.Y];
                                     Board[startPos.X, targetPos.Y] = '\u0020';
                                 }
                             }
@@ -234,9 +245,10 @@ namespace ChessLibrary
                         friendFigures[i].PreviousPositions.Add(friendFigures[i].Position);
                         friendFigures[i].Position = targetPos;
                         char figureSymbol = Board[startPos.X, startPos.Y];
+                        eatenFigureSymbol = Board[targetPos.X, targetPos.Y];
                         Board[targetPos.X, targetPos.Y] = figureSymbol;
                         Board[startPos.X, startPos.Y] = '\u0020';
-                        Moves.Add(new Moves(figureSymbol, startPos, targetPos));
+                        Moves.Add(new Move(figureSymbol, startPos, targetPos,eatenFigureSymbol));
                         int distance = startPos.Y - targetPos.Y;
                         if (figure is King && Math.Abs(distance) == 2)
                         {
@@ -259,7 +271,6 @@ namespace ChessLibrary
                             figureSymbol = Board[rookStartPos.X, rookStartPos.Y];
                             Board[rookTargetPos.X, rookTargetPos.Y] = figureSymbol;
                             Board[rookStartPos.X, rookStartPos.Y] = '\u0020';
-                            Moves.Add(new Moves(figureSymbol, rookStartPos, rookTargetPos));
                         }
                         whoseMoves = GetEnemyColor(WhoseMoves);
                     }
@@ -501,7 +512,7 @@ namespace ChessLibrary
             bool isTime = false;
             if(Moves.Count==0)
                 return isTime;
-            Moves move = Moves[^1];//Moves.Count - 1
+            Move move = Moves[^1];//Moves.Count - 1
             bool isPawn=false;
             if(move.FigureSymbol=='\u2659'||move.FigureSymbol=='\u265F')
                 isPawn=true;
@@ -512,6 +523,100 @@ namespace ChessLibrary
             }
             return isTime;
         }
+
+        public bool IsDraw()
+        {
+            if (Moves.Count >= 6) //when two players 3 last moves is same
+            {
+                int count = Moves.Count;
+                if (Moves[count - 1] == Moves[count - 3] && Moves[count - 1] == Moves[count - 5]
+                    && Moves[count - 2] == Moves[count - 4] && Moves[count - 2] == Moves[count - 6])
+                    return true;
+            }
+            if (IsStalemate(WhoseMoves)) //when stalemate
+                return true;
+            if (WhiteFigures.Count == 1 && BlackFigures.Count == 1) //when King vs. king
+                return true;
+            if (WhiteFigures.Count == 1) // when King and bishop vs. king
+            {
+                if (BlackFigures.Count == 2)
+                {
+                    if ((BlackFigures[0] is Bishop) || (BlackFigures[1] is Bishop))
+                        return true;
+                }
+            }
+            if (BlackFigures.Count == 1) // when King and bishop vs. king
+            {
+                if (WhiteFigures.Count == 2)
+                {
+                    if ((WhiteFigures[0] is Bishop) || (WhiteFigures[1] is Bishop))
+                        return true;
+                }
+            }
+            if (WhiteFigures.Count == 1) // when King and knight vs. king
+            {
+                if (BlackFigures.Count == 2)
+                {
+                    if ((BlackFigures[0] is Knight) || (BlackFigures[1] is Knight))
+                        return true;
+                }
+            }
+            if (BlackFigures.Count == 1) // when King and knight  vs. king
+            {
+                if (WhiteFigures.Count == 2)
+                {
+                    if ((WhiteFigures[0] is Knight) || (WhiteFigures[1] is Knight))
+                        return true;
+                }
+            }
+            if (WhiteFigures.Count == 2 && BlackFigures.Count == 2) // if King and bishop vs. king and bishop of the same color as the opponent's bishop
+            {
+                Figure whiteBishop=null;
+                if (WhiteFigures[0] is Bishop)
+                {
+                    whiteBishop = WhiteFigures[0];
+                }
+                else if (WhiteFigures[1] is Bishop)
+                {
+                    whiteBishop= WhiteFigures[1];
+                }
+                if (whiteBishop is not null)
+                {
+                    Figure blackBishop = null;
+                    if (WhiteFigures[0] is Bishop)
+                    {
+                        blackBishop = WhiteFigures[0];
+                    }
+                    else if (WhiteFigures[1] is Bishop)
+                    {
+                        blackBishop = WhiteFigures[1];
+                    }
+                    if (blackBishop is not null)
+                        if ((whiteBishop.Position.X + whiteBishop.Position.Y) % 2 == (blackBishop.Position.X + blackBishop.Position.Y) % 2)
+                            return true;
+                }
+            }
+            if (Moves.Count >= 50) //If both players make 50 consecutive moves without capturing any pieces or moving any pawns
+            {
+                bool isNotTrue = false;
+                for (int i = 1; i < 51; i++)
+                {
+                    if (Moves[Moves.Count - i].FigureSymbol == '\u2659' || Moves[Moves.Count - i].FigureSymbol == '\u265F')
+                    {
+                        isNotTrue = true;
+                        break;
+                    }
+                    if ((int)Moves[Moves.Count - i].EatenFigureSymbol >= 9812 && (int)Moves[Moves.Count - i].EatenFigureSymbol <= 9823)
+                    {
+                        isNotTrue = true;
+                        break;
+                    }
+                }
+                if (!isNotTrue)
+                    return true;
+            }
+            return false;
+        }
                 
         /// <summary>
         /// Gets is stalemate for given color's player. 
@@ -519,9 +624,9 @@ namespace ChessLibrary
         /// </summary>
         /// <param name="col">player's color</param>
         /// <returns>returns true if stalemate, false otherwise</returns>
-        public bool IsStalemate(FigureColorEnum color)
+        bool IsStalemate(FigureColorEnum color)
         {
-            bool isStalemate = false;
+            bool isStalemate = false;            
             if (!IsCheck(color))
             {
                 isStalemate = true;
@@ -564,7 +669,6 @@ namespace ChessLibrary
                         _ => throw new ArgumentOutOfRangeException($"Oops something wrong, Pawn can not be changed to {changeTo}..." ),
                     };
                     figure.PreviousPositions = pawn.PreviousPositions;
-                    Moves.Add(new Moves(figure.GetSymbol(), figure.Position, figure.Position));
                     PutFigure(figure);
                     figures[index] = figure;
                 }

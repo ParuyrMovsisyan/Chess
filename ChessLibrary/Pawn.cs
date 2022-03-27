@@ -76,7 +76,7 @@ namespace ChessLibrary
             int count = chessboard.Moves.Count;
             if (count == 0)
                 return hasSpecialMove;
-            Moves move = chessboard.Moves[count - 1];
+            Move move = chessboard.Moves[count - 1];
             if (Color == FigureColorEnum.White && Position.X == 3)
             {
                 if (move.FigureSymbol == '\u265F')

@@ -139,11 +139,11 @@ namespace WpfApp
                     MessageBox.Show("Check");
                 }
             }
-            else if (game.IsStalemate())
+            else if (game.IsDraw())
             {
                 SystemSounds.Beep.Play();
                 GameOverWindow gameOverWindow = new();
-                gameOverWindow.ResultLabel.Content = "Drow";
+                gameOverWindow.ResultLabel.Content = "Draw";
                 gameOverWindow.Show();
             }
             if (game is AutoGame autoGame)
@@ -191,11 +191,11 @@ namespace WpfApp
                     MessageBox.Show("Check");
                 }
             }
-            else if (game.IsStalemate())
+            else if (game.IsDraw())
             {
                 SystemSounds.Beep.Play();
                 GameOverWindow gameOverWindow = new();
-                gameOverWindow.ResultLabel.Content = "Drow";
+                gameOverWindow.ResultLabel.Content = "Draw";
                 gameOverWindow.Show();
             }
         }

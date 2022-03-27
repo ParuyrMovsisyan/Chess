@@ -107,9 +107,9 @@ namespace GameLibrary
         /// A player is stalemated when on his turn he has no legal move but is not in check
         /// </summary>
         /// <returns>returns true if stalemate, false otherwise</returns>
-        public bool IsStalemate()
+        public bool IsDraw()
         {
-            return Chessboard.IsStalemate(Chessboard.WhoseMoves);
+            return Chessboard.IsDraw();
         }
               
         /// <summary>
