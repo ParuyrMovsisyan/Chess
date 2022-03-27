@@ -21,6 +21,10 @@ namespace ChessLibrary
         /// </summary>
         char[,] board=new char[8,8];
         /// <summary>
+        /// defines whose moves
+        /// </summary>
+        FigureColorEnum whoseMoves;
+        /// <summary>
         /// List of white figures
         /// </summary>
         List<Figure> WhiteFigures=new ();
@@ -28,6 +32,10 @@ namespace ChessLibrary
         /// List of black figures
         /// </summary>
         List<Figure> BlackFigures=new ();
+        /// <summary>
+        /// board's history
+        /// </summary>
+        List<ChessboardHistory> history=new();
         /// <summary>
         /// List of moves
         /// </summary>
@@ -47,11 +55,6 @@ namespace ChessLibrary
                 board = value;
             }
         }
-        /// <summary>
-        /// defines whose moves
-        /// </summary>
-        FigureColorEnum whoseMoves;
-
         /// <summary>
         /// Propery for whose moves
         /// </summary>
@@ -210,13 +213,14 @@ namespace ChessLibrary
         public void Move(Point startPos, Point targetPos)
         {
             Figure figure = GetFigure(startPos);
-            char eatenFigureSymbol = '\u0020';
+            char eatenFigureSymbol= '\u0020';
             if (figure is not null)
             {
                 if (figure.Color == whoseMoves)
                 {
                     if (figure.CanMove(targetPos, this))
-                    {
+                    {                        
+                        history.Add(new(Board,WhoseMoves));
                         var friendFigures = GetFriendFigures(figure);
                         Figure? enemyFigure = null;
                         if (figure is Pawn pawn)
@@ -242,7 +246,7 @@ namespace ChessLibrary
                         if (enemyFigure is not null)
                         {
                             if (enemyFigure.Color == FigureColorEnum.White)
-                                WhiteFigures = WhiteFigures.RemoveFigure(targetPos);
+                                WhiteFigures = WhiteFigures.RemoveFigure(enemyFigure.Position);
                             else
                                 BlackFigures = BlackFigures.RemoveFigure(targetPos);
                         }
@@ -250,7 +254,8 @@ namespace ChessLibrary
                         friendFigures[i].PreviousPositions.Add(friendFigures[i].Position);
                         friendFigures[i].Position = targetPos;
                         char figureSymbol = Board[startPos.X, startPos.Y];
-                        eatenFigureSymbol = Board[targetPos.X, targetPos.Y];
+                        if ((int)eatenFigureSymbol < 9812 && (int)eatenFigureSymbol > 9823)
+                            eatenFigureSymbol = Board[targetPos.X, targetPos.Y];
                         Board[targetPos.X, targetPos.Y] = figureSymbol;
                         Board[startPos.X, startPos.Y] = '\u0020';
                         Moves.Add(new Move(figureSymbol, startPos, targetPos,eatenFigureSymbol));
@@ -531,12 +536,18 @@ namespace ChessLibrary
 
         public bool IsDraw()
         {
-            if (Moves.Count >= 6) //when two players 3 last moves is same
+            if (Moves.Count >= 12) // when a position is reached (or is about to be reached) at least three times in the same game.
+                                  // This repetition is only possible when all the pieces of the same size
+                                  // and color are occupying identical squares as they were before, and all the possible moves are also the same. 
             {
-                int count = Moves.Count;
-                if (Moves[count - 1] == Moves[count - 3] && Moves[count - 1] == Moves[count - 5]
-                    && Moves[count - 2] == Moves[count - 4] && Moves[count - 2] == Moves[count - 6])
-                    return true;
+                int count = 0;
+                for (int i = 0; i < history.Count-1; i++)
+                {
+                    if (history[i] == history[history.Count - 1])
+                        count++;
+                }
+                    if(count==2)
+                        return true;
             }
             if (IsStalemate(WhoseMoves)) //when stalemate
                 return true;

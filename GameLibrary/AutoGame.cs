@@ -47,12 +47,10 @@ namespace GameLibrary
                 {
                     foreach (var pos in targetPos)
                     {
-                        PossibleMove possibleMove = new();
+                        PossibleMove possibleMove; 
                         if (figure.CanMove(pos, Chessboard))
                         {
-                            possibleMove.StartPoint = figure.Position;
-                            possibleMove.EndPoint = pos;
-                            possibleMove.MyWeight = figure.Weight;
+                            possibleMove= new PossibleMove { StartPoint=figure.Position, EndPoint=pos,MyWeight=figure.Weight };
                             if (Chessboard.Board[pos.X, pos.Y] != '\u0020')
                             {
                                 possibleMove.EnemyWeight = Chessboard.GetFigure(pos).Weight;
@@ -125,10 +123,17 @@ namespace GameLibrary
                             {
                                 posMove = inDangerFigureMoves[0];
                             }
-                            if (myMove.EnemyWeight - posMove.MyWeight >= posMove.EffectiveWeight)
+                            if (posMove.MyWeight == 100)
+                            {
                                 Move(myMove.StartPoint, myMove.EndPoint);
+                            }
                             else
-                                Move(posMove.StartPoint, posMove.EndPoint);
+                            {
+                                if (myMove.EnemyWeight - posMove.MyWeight >= posMove.EffectiveWeight)
+                                    Move(myMove.StartPoint, myMove.EndPoint);
+                                else
+                                    Move(posMove.StartPoint, posMove.EndPoint);
+                            }                            
                         }
                         else
                         {
@@ -154,42 +159,44 @@ namespace GameLibrary
         /// <returns></returns>
         PossibleMove ChooseWhatToPlay(List<PossibleMove> possibleMoves)
         {            
-            Chessboard fakeChessboard ;            
-            for (int i = 0; i < possibleMoves.Count; i++)
+            Chessboard fakeChessboard ;
+            int maxWeight = possibleMoves.Max(e => e.EffectiveWeight);
+            if (maxWeight < 2)
             {
-                fakeChessboard = new Chessboard(Chessboard);
-                var figure = fakeChessboard.GetFigure(possibleMoves[i].StartPoint);
-                if (!figure.CanBeEatenIfMove(possibleMoves[i].EndPoint, fakeChessboard))
+                for (int i = 0; i < possibleMoves.Count; i++)
                 {
-                    fakeChessboard.Move(possibleMoves[i].StartPoint, possibleMoves[i].EndPoint);
-                    if (fakeChessboard.IsCheck(fakeChessboard.WhoseMoves))
-                        return possibleMoves[i];
+                    fakeChessboard = new Chessboard(Chessboard);
+                    var figure = fakeChessboard.GetFigure(possibleMoves[i].StartPoint);
+                    if (!figure.CanBeEatenIfMove(possibleMoves[i].EndPoint, fakeChessboard))
+                    {
+                        fakeChessboard.Move(possibleMoves[i].StartPoint, possibleMoves[i].EndPoint);
+                        if (fakeChessboard.IsCheck(fakeChessboard.WhoseMoves))
+                            return possibleMoves[i];
+                    }
                 }
-            }
+            }            
             if (Chessboard.Moves.Count > 25)
-            {
-                int maxWeight = possibleMoves.Max(e => e.EffectiveWeight);
+            {                
                 if (maxWeight == 0)
                 {
-                    var query = from e in possibleMoves
+                    var query = (from e in possibleMoves
                                 where e.EnemyWeight == e.EffectiveWeight && e.MyWeight == 1
-                                select e;
-                    if (query.Count() > 0)
+                                select e).ToList();
+                    if (query.Count > 0)
                     {
                         Random random = new();
-                        int i = random.Next(0, query.Count());
+                        int i = random.Next(0, query.Count);
                         return query.ElementAt(i);
                     }
                 }
-            }
-            
-            var query1 = from e in possibleMoves
-                         where e.EffectiveWeight == possibleMoves.Max(e => e.EffectiveWeight)
-                         select e;
-            if (query1.Count() > 1)
+            }            
+            var query1 = (from e in possibleMoves
+                         where e.EffectiveWeight == maxWeight
+                          select e).ToList();
+            if (query1.Count > 1)
             {
                 Random random = new();
-                int i = random.Next(0, query1.Count());
+                int i = random.Next(0, query1.Count);
                 return query1.ElementAt(i);
             }
             else
