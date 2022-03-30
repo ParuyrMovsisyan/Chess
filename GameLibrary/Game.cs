@@ -1,4 +1,5 @@
 ﻿using ChessLibrary;
+using System.Text;
 
 namespace GameLibrary
 {
@@ -121,6 +122,14 @@ namespace GameLibrary
         public bool IsDraw()
         {
             return Chessboard.IsDraw();
+        }
+
+        public string GetMoves()
+        {
+            StringBuilder sb = new();
+            foreach (var item in Chessboard.Moves)
+                sb.Append("    "+item.FigureSymbol.ToString().PadRight(3)+"   "+item.StartPos+"      "+item.EndPos+"     "+item.EatenFigureSymbol.ToString().PadRight(2) + "\r");
+            return sb.ToString();
         }
 
         /// <summary>

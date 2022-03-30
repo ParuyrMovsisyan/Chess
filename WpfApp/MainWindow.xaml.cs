@@ -109,7 +109,11 @@ namespace WpfApp
                     if (StartTextBox.Text == string.Empty)
                     {
                         if (game.IsRightChosen(pos))
+                        {
                             StartTextBox.Text = pos;
+                            ChoosenFigureLabel.Content=Game.GetBoard()[position.X, position.Y]+" "+pos;
+                        }
+                            
                     }
                     else
                     {
@@ -121,7 +125,7 @@ namespace WpfApp
                         }
                     }
                 }
-            }
+            }            
         }
         void Move()
         {
@@ -244,14 +248,15 @@ namespace WpfApp
         {
             StartTextBox.Text = String.Empty;
             TargetTextBox.Text = String.Empty;
+            ChoosenFigureLabel.Content = string.Empty;
             Grid1.Children.Clear();
             Grid1.Children.Add(Menu);
             Grid1.Children.Add(ChessboardImg);
-            Grid1.Children.Add(StartLabel);
-            Grid1.Children.Add(StartTextBox);
-            Grid1.Children.Add(TargetLabel);
-            Grid1.Children.Add(TargetTextBox);
-            Grid1.Children.Add(MoveButton);
+            Grid1.Children.Add(ChoosenFigureLabel);
+            Grid1.Children.Add(MovesHeadLabel);
+            Grid1.Children.Add(MoveLabel);
+            Grid1.Children.Add(movesLabel);
+            movesLabel.Content = Game.GetMoves();
             WhoseMovesTextBlock.Text = game.WhoseMoves + "\'s turn";
             Grid1.Children.Add(WhoseMovesTextBlock);
             PutFigures();

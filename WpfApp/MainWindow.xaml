@@ -13,11 +13,15 @@
             </MenuItem>
         </Menu>
         <Image x:Name="ChessboardImg" HorizontalAlignment="Left" Height="352" Margin="64,48,0,0" VerticalAlignment="Top" Width="352" Source="/BlackChessboard.png" Stretch="Uniform" IsEnabled="False" Grid.Column="1"/>
-        <TextBox x:Name="StartTextBox" HorizontalAlignment="Left" Margin="422,165,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Grid.Column="1"/>
-        <TextBox x:Name="TargetTextBox" HorizontalAlignment="Left" Margin="524,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="55" Grid.Column="1"/>
-        <Button x:Name="MoveButton" Content="Move" HorizontalAlignment="Left" Margin="488,197,0,0" VerticalAlignment="Top" Click="MoveButton_Click" Grid.Column="1"/>
-        <Label x:Name="StartLabel" Content="Start" HorizontalAlignment="Left" Margin="435,133,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-        <Label x:Name="TargetLabel" Content="Target" HorizontalAlignment="Left" Margin="530,133,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+        <TextBox x:Name="StartTextBox" HorizontalAlignment="Left" Margin="422,165,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Grid.Column="1" Visibility="Hidden"/>
+        <TextBox x:Name="TargetTextBox" HorizontalAlignment="Left" Margin="524,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="55" Grid.Column="1" Visibility="Hidden"/>
+        <Button x:Name="MoveButton" Content="Move" HorizontalAlignment="Left" Margin="488,197,0,0" VerticalAlignment="Top" Click="MoveButton_Click" Grid.Column="1" Visibility="Hidden"/>
+        <Label x:Name="StartLabel" Content="Start" HorizontalAlignment="Left" Margin="435,133,0,0" VerticalAlignment="Top" Grid.Column="1" Visibility="Hidden"/>
+        <Label x:Name="TargetLabel" Content="Target" HorizontalAlignment="Left" Margin="530,133,0,0" VerticalAlignment="Top" Grid.Column="1" Visibility="Hidden"/>
         <TextBlock x:Name="WhoseMovesTextBlock" HorizontalAlignment="Left" Margin="435,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="55"/>
+        <Label x:Name="ChoosenFigureLabel" Content="" HorizontalAlignment="Left" Margin="435,0,0,0" VerticalAlignment="Center" Width="70" FontSize="16" FontWeight="Bold"/>
+        <Label x:Name="movesLabel" Content="" HorizontalAlignment="Left" Margin="640,56,0,0" VerticalAlignment="Top" Height="328" Width="160"/>
+        <Label x:Name="MoveLabel" Content="Mves" HorizontalAlignment="Left" Margin="672,14,0,0" VerticalAlignment="Top" Width="96"/>
+        <Label x:Name="MovesHeadLabel" Content="Figure  From  To  Taken" HorizontalAlignment="Left" Margin="640,40,0,0" VerticalAlignment="Top" Width="150"/>
     </Grid>
 </Window>
