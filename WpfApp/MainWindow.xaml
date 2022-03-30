@@ -5,13 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp"
         mc:Ignorable="d"
-        Title="Chess" Height="450" Width="800">
+        Title="Chess" Height="450" Width="800" Closing="Chees_Closing" Closed="Chees_Closed">
 
     <Grid x:Name="Grid1" MouseLeftButtonDown="Grid1_MouseLeftButtonDown">
         <Menu x:Name="Menu" Height="40" Width="200" Margin="0,0,600,394" Grid.ColumnSpan="2">
             <MenuItem x:Name="NewGame" Header="New Game" Click="NewGame_Click" Height="20" RenderTransformOrigin="0.5,0.5" Width="69">
             </MenuItem>
-            <MenuItem Header="Add Figures" Click="MenuItem_Click" ></MenuItem>
         </Menu>
         <Image x:Name="ChessboardImg" HorizontalAlignment="Left" Height="352" Margin="64,48,0,0" VerticalAlignment="Top" Width="352" Source="/BlackChessboard.png" Stretch="Uniform" IsEnabled="False" Grid.Column="1"/>
         <TextBox x:Name="StartTextBox" HorizontalAlignment="Left" Margin="422,165,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Grid.Column="1"/>

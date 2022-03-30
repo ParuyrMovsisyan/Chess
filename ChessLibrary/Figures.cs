@@ -45,7 +45,7 @@
         /// <summary>
         /// previous positions collection
         /// </summary>
-        public List<Point> PreviousPositions;
+        public List<Point> PreviousPositions=new();
         /// <summary>
         /// figure's weight
         /// </summary>
@@ -60,7 +60,33 @@
         {
             color = col;
             position = pos;
-            PreviousPositions= new List<Point>();
+        }
+
+        /// <summary>
+        /// Creates figure from given figure symbol and position
+        /// </summary>
+        /// <param name="c">figure unicode symbol</param>
+        /// <param name="p">position for figure</param>
+        /// <returns>Figure if can create or null otherwise</returns>
+        internal static Figure CreateFigure(char c, Point p)
+        {
+            Figure? figure = c switch
+            {
+                '\u2654' => new King(FigureColorEnum.White, p),
+                '\u265A' => new King(FigureColorEnum.Black, p),
+                '\u2655' => new Queen(FigureColorEnum.White, p),
+                '\u265B' => new Queen(FigureColorEnum.Black, p),
+                '\u2656' => new Rook(FigureColorEnum.White, p),
+                '\u265C' => new Rook(FigureColorEnum.Black, p),
+                '\u2657' => new Bishop(FigureColorEnum.White, p),
+                '\u265D' => new Bishop(FigureColorEnum.Black, p),
+                '\u2658' => new Knight(FigureColorEnum.White, p),
+                '\u265E' => new Knight(FigureColorEnum.Black, p),
+                '\u2659' => new Pawn(FigureColorEnum.White, p),
+                '\u265F' => new Pawn(FigureColorEnum.Black, p),
+                _ => null,
+            };
+            return figure;
         }
 
         /// <summary>

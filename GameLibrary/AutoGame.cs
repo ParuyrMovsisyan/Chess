@@ -29,6 +29,33 @@ namespace GameLibrary
         }
 
         /// <summary>
+        /// Creates new game or continues saved game
+        /// </summary>
+        /// <param name="color">color for autoplayer</param>
+        /// <param name="continueSavedGame">bool: if true continues saved game, otherwise cretes new game</param>        
+        public AutoGame(int color,bool continueSavedGame) :base(continueSavedGame)
+        {
+            autoPlayerColor = (FigureColorEnum)color;
+            if (autoPlayerColor.ToString() == WhoseMoves)
+                Think();
+        }
+
+
+        /// <summary>
+        /// Constructor: Creates a game from given board's and sets whose turn
+        /// This constructor can throw exception use it in try/catch statement 
+        /// </summary>
+        /// <param name="color">color for autoplayer</param>
+        /// <param name="board">Two dimensional character 8x8 array</param>
+        /// <param name="isWhitesTurn">if true then whit's turn, otherwise black's turn</param>
+        public AutoGame(int color, char[,] board, bool isWhitesTurn = true) : base(board, isWhitesTurn)
+        {
+            autoPlayerColor = (FigureColorEnum)color;
+            if (autoPlayerColor.ToString() == WhoseMoves)
+                Think();
+        }
+
+        /// <summary>
         /// thinks what to play
         /// </summary>
         public void Think()

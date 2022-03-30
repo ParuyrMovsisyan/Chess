@@ -22,23 +22,28 @@ namespace GameLibrary
         /// may transform that Pawn into any piece they want (most players chose a Queen).
         /// </summary>
         public bool IsTimeToPromotionPawn { get { return Chessboard.IsTimeToPromotionPawn(); } }
-        
-        /// <summary>
-        /// Constructor: Takes a empty chessboard
-        /// </summary>
-        public Game()
-        {
-            Chessboard = new Chessboard();
-        }              
 
         /// <summary>
-        /// Constructor: Creates a game from given board's.
+        /// Creates new game or continues saved game
+        /// </summary>
+        /// <param name="continueSavedGame">bool: if true continues saved game, otherwise cretes new game</param>
+        public Game(bool continueSavedGame = false)
+        {
+            if (continueSavedGame)
+                Chessboard = ChessDB.GetSavedGame();
+            else
+                Chessboard = new Chessboard();
+        }
+
+        /// <summary>
+        /// Constructor: Creates a game from given board's and sets whose turn
         /// This constructor can throw exception use it in try/catch statement 
         /// </summary>
         /// <param name="board">Two dimensional character 8x8 array</param>
+        /// <param name="isWhitesTurn">if true then whit's turn, otherwise black's turn</param>
         public Game(char[,] board, bool isWhitesTurn = true)
-        {        
-                Chessboard = new Chessboard(board,isWhitesTurn);
+        {
+            Chessboard = new Chessboard(board, isWhitesTurn);
         }
 
         /// <summary>
@@ -48,11 +53,11 @@ namespace GameLibrary
         /// <returns>bool: true if chosen right coplor's any figure, and false otherwise</returns>
         public bool IsRightChosen(string pos)
         {
-            Point positon=new (pos);
+            Point positon = new(pos);
             if (Chessboard.Board[positon.X, positon.Y] != '\u0020')
             {
                 var color = Chessboard.GetFigure(positon).Color;
-                if(color==Chessboard.WhoseMoves)
+                if (color == Chessboard.WhoseMoves)
                     return true;
             }
             return false;
@@ -66,18 +71,24 @@ namespace GameLibrary
         {
             Chessboard.PawnPromotionTo(changeTo);
         }
-        // <summary>
+
+        /// <summary>
         /// moves figure from current position to target position if it is possible.
         /// </summary>
         /// <param name="startPos">string: current position</param>
         /// <param name="targetPos">string: target position</param>
         public void Move(string startPos, string targetPos)
         {
-            Point stPos = new (startPos);
-            Point trgPos = new (targetPos);
+            Point stPos = new(startPos);
+            Point trgPos = new(targetPos);
             Move(stPos, trgPos);
         }
 
+        /// <summary>
+        /// moves figure from current position to target position if it is possible.
+        /// </summary>
+        /// <param name="startpos">Point: current position/param>
+        /// <param name="targetPos">Point: target position</param>
         protected void Move(Point startpos, Point targetPos)
         {
             if (Chessboard.IsInBoard(startpos) && Chessboard.IsInBoard(targetPos))
@@ -90,8 +101,8 @@ namespace GameLibrary
         /// <returns>true if under check,otherwise false</returns>
         public bool IsUnderCheck()
         {
-            return Chessboard.IsCheck(Chessboard.WhoseMoves);               
-        }        
+            return Chessboard.IsCheck(Chessboard.WhoseMoves);
+        }
 
         /// <summary>
         /// Checks is player lost
@@ -111,7 +122,7 @@ namespace GameLibrary
         {
             return Chessboard.IsDraw();
         }
-              
+
         /// <summary>
         /// Gets board 
         /// </summary>
@@ -119,6 +130,15 @@ namespace GameLibrary
         public char[,] GetBoard()
         {
             return Chessboard.Board;
+        }
+
+        /// <summary>
+        /// Saves game if at least one step is played
+        /// </summary>
+        public void Save(int isAutoGame,string autoPlayerColor)
+        {
+            if (Chessboard.Moves.Count > 0 && !IsDraw() &&!IsCheckmate())
+                ChessDB.Save(Chessboard,isAutoGame,autoPlayerColor);
         }
     }
 }

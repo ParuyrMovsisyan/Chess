@@ -18,13 +18,13 @@ namespace WpfApp
     /// <summary>
     /// Interaction logic for AddFigures.xaml
     /// </summary>
-    public partial class AddFigures : Window
+    public partial class CustomGameWindow : Window
     {
         /// <summary>
         /// chessboard
         /// </summary>
         readonly char[,] board = new char[8, 8];
-        public AddFigures()
+        public CustomGameWindow()
         {
             InitializeComponent();
             for (int i = 0; i < 8; i++)
@@ -76,17 +76,64 @@ namespace WpfApp
             try
             {
                 bool isStartingWhites = WhoseTurnComboBox.Text == "White's";
-                Game game = new (board,isStartingWhites);
                 MainWindow w = (MainWindow)App.Current.MainWindow;
-                w.Game = game;
-                w.CreateWindow();
-                w.PutFigures();
-                this.Close();
+                if (GameType.Text == "2 Players")
+                {
+                    w.Game = new(board, isStartingWhites);
+                    w.CreateWindow();
+                    w.PutFigures();
+                    this.Close();
+                }
+                else
+                {
+                    if (Color.Text == null || Color.Text == string.Empty)
+                    {
+                        MessageBox.Show("Choose Your color");
+                    }
+                    else
+                    {
+                        if (Color.Text == "White")
+                        {
+                            w.Game = new AutoGame(1, board, isStartingWhites);
+                        }
+                        else
+                        {
+                            w.Game = new AutoGame(0, board, isStartingWhites);
+                        }
+                        w.CreateWindow();
+                        w.PutFigures();
+                        this.Close();
+                    }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// if selected Play with computer visibles combo box for chossing color
+        /// </summary>
+        private void GameType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (GameType.Text == "2 Players")
+            {
+                Color.Visibility = Visibility.Visible;
+                ColorLabel.Visibility = Visibility.Visible;
+            }
+            else if (GameType.Text == "Play with computer")
+            {
+                Color.Visibility = Visibility.Hidden;
+                ColorLabel.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            MainWindow w = (MainWindow)Application.Current.MainWindow;
+            if (w.Game is null)
+                Application.Current.Shutdown();
         }
     }
 }

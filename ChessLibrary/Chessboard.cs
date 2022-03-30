@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace ChessLibrary
 {
     /// <summary>
@@ -27,15 +28,15 @@ namespace ChessLibrary
         /// <summary>
         /// List of white figures
         /// </summary>
-        List<Figure> WhiteFigures=new ();
+        internal List<Figure> WhiteFigures { get; private set; } = new();
         /// <summary>
         /// List of black figures
         /// </summary>
-        List<Figure> BlackFigures=new ();
+        internal List<Figure> BlackFigures { get; private set; } = new ();
         /// <summary>
         /// board's history
         /// </summary>
-        List<ChessboardHistory> history=new();
+        internal List<ChessboardHistory> History {  get; private set; } = new();
         /// <summary>
         /// List of moves
         /// </summary>
@@ -58,7 +59,7 @@ namespace ChessLibrary
         /// <summary>
         /// Propery for whose moves
         /// </summary>
-        public FigureColorEnum WhoseMoves { get { return whoseMoves; } }
+        public FigureColorEnum WhoseMoves { get { return whoseMoves; } internal set { whoseMoves = value; } }
 
         /// <summary>
         /// Constructor: builds empty chessboard
@@ -111,6 +112,9 @@ namespace ChessLibrary
         {
             foreach( var move in chessboard.Moves)
                 Moves.Add(move);
+            foreach(var history in chessboard.History)
+                History.Add(history);
+            whoseMoves=chessboard.WhoseMoves;
         }
 
         /// <summary>
@@ -125,6 +129,13 @@ namespace ChessLibrary
         {
             if (newBoard.GetLength(0) != 8 || newBoard.GetLength(1) != 8)
                 throw new ArgumentException("Given board is not for chess...");
+            for (int i = 0; i < 8; i++)
+            {
+                if(newBoard[0,i]== '\u2659' || newBoard[0, i] == '\u2659')
+                    throw new Exception("The white pawn can not be in 8-th or 1-st line.");
+                if(newBoard[1,i]== '\u265F')
+                    throw new Exception("The black  pawn can not be in 8-th or 1-st line.");
+            }
             board = newBoard;
             List<Figure> figures = GetFigures();
             if (figures is null)
@@ -134,7 +145,7 @@ namespace ChessLibrary
             else if (figures.Count < 3)
                 throw new Exception("There are few figures for starting game...");
             else if (!Chessboard.IsTwoKingsExist(figures))
-                throw new Exception("There are more or less then two kings");
+                throw new Exception("There are more or less then two kings");            
             else
             {
                 Chessboard chessboard = new (figures);
@@ -220,7 +231,7 @@ namespace ChessLibrary
                 {
                     if (figure.CanMove(targetPos, this))
                     {                        
-                        history.Add(new(Board,WhoseMoves));
+                        History.Add(new(Board,WhoseMoves));
                         var friendFigures = GetFriendFigures(figure);
                         Figure? enemyFigure = null;
                         if (figure is Pawn pawn)
@@ -248,13 +259,13 @@ namespace ChessLibrary
                             if (enemyFigure.Color == FigureColorEnum.White)
                                 WhiteFigures = WhiteFigures.RemoveFigure(enemyFigure.Position);
                             else
-                                BlackFigures = BlackFigures.RemoveFigure(targetPos);
+                                BlackFigures = BlackFigures.RemoveFigure(enemyFigure.Position);
                         }
                         int i = friendFigures.IndexOf(figure.Position);
                         friendFigures[i].PreviousPositions.Add(friendFigures[i].Position);
                         friendFigures[i].Position = targetPos;
                         char figureSymbol = Board[startPos.X, startPos.Y];
-                        if ((int)eatenFigureSymbol < 9812 && (int)eatenFigureSymbol > 9823)
+                        if ((int)eatenFigureSymbol < 9812 || (int)eatenFigureSymbol > 9823)
                             eatenFigureSymbol = Board[targetPos.X, targetPos.Y];
                         Board[targetPos.X, targetPos.Y] = figureSymbol;
                         Board[startPos.X, startPos.Y] = '\u0020';
@@ -310,25 +321,9 @@ namespace ChessLibrary
         /// <returns>Figure: Returns figure if there are, otherwise returns null </returns>
         public Figure GetFigure(Point p)
         {
-            char c = Board[p.X, p.Y];
-            Figure? figure = c switch
-            {
-                '\u2654' => new King(FigureColorEnum.White, p),
-                '\u265A' => new King(FigureColorEnum.Black, p),
-                '\u2655' => new Queen(FigureColorEnum.White, p),
-                '\u265B' => new Queen(FigureColorEnum.Black, p),
-                '\u2656' => new Rook(FigureColorEnum.White, p),
-                '\u265C' => new Rook(FigureColorEnum.Black, p),
-                '\u2657' => new Bishop(FigureColorEnum.White, p),
-                '\u265D' => new Bishop(FigureColorEnum.Black, p),
-                '\u2658' => new Knight(FigureColorEnum.White, p),
-                '\u265E' => new Knight(FigureColorEnum.Black, p),
-                '\u2659' => new Pawn(FigureColorEnum.White, p),
-                '\u265F' => new Pawn(FigureColorEnum.Black, p),
-                _ => null,
-            };
-            return figure;
-        }
+            char c = Board[p.X, p.Y];            
+            return Figure.CreateFigure(c,p);
+        }        
 
         /// <summary>
         /// Returns all figures from board
@@ -540,10 +535,11 @@ namespace ChessLibrary
                                   // This repetition is only possible when all the pieces of the same size
                                   // and color are occupying identical squares as they were before, and all the possible moves are also the same. 
             {
+                var newState = new ChessboardHistory(Board, WhoseMoves);
                 int count = 0;
-                for (int i = 0; i < history.Count-1; i++)
+                for (int i = 0; i < History.Count; i++)
                 {
-                    if (history[i] == history[history.Count - 1])
+                    if (newState == History[i])
                         count++;
                 }
                     if(count==2)
@@ -599,13 +595,13 @@ namespace ChessLibrary
                 if (whiteBishop is not null)
                 {
                     Figure blackBishop = null;
-                    if (WhiteFigures[0] is Bishop)
+                    if (BlackFigures[0] is Bishop)
                     {
-                        blackBishop = WhiteFigures[0];
+                        blackBishop = BlackFigures[0];
                     }
-                    else if (WhiteFigures[1] is Bishop)
+                    else if (BlackFigures[1] is Bishop)
                     {
-                        blackBishop = WhiteFigures[1];
+                        blackBishop = BlackFigures[1];
                     }
                     if (blackBishop is not null)
                         if ((whiteBishop.Position.X + whiteBishop.Position.Y) % 2 == (blackBishop.Position.X + blackBishop.Position.Y) % 2)

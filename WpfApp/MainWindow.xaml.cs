@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using GameLibrary;
 using System.Media;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace WpfApp
 {
@@ -31,15 +33,43 @@ namespace WpfApp
         public MainWindow()
         {
             InitializeComponent();
-            NewGame_Click(new Object(), new RoutedEventArgs());
+            if (IsThereSavedGame())
+            {
+                ContinueWindow continueWindow = new ContinueWindow();
+                continueWindow.ShowDialog();
+            }
+            else
+            {
+                NewGame newGameWindow = new();
+                newGameWindow.ShowDialog();
+            }
         }
 
         public MainWindow(Game game)
         {
             InitializeComponent();
-            this.game = game;
+            this.game = game;            
             CreateWindow();
             PutFigures();
+        }
+
+        /// <summary>
+        /// checks is there saved game inn database
+        /// </summary>
+        /// <returns></returns>
+        bool IsThereSavedGame()
+        {
+            string conString = ConfigurationManager.ConnectionStrings["ChessDB"].ConnectionString;
+            using (var con = new SqlConnection(conString))
+            {
+                string commandText = "Select isAutoGame FROM Game;";
+                using (var cmd = new SqlCommand(commandText, con))
+                {
+                    con.Open();
+                    var reader=cmd.ExecuteReader();
+                    return reader.HasRows;
+                }
+            }
         }
 
         /// <summary>
@@ -67,8 +97,6 @@ namespace WpfApp
         /// then from mouse position sets start position, 
         /// otherwise from mouse position sets target position and tries move figure
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Grid1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Point mousePos = e.GetPosition(this);
@@ -141,7 +169,7 @@ namespace WpfApp
                     else
                         winner = "Black";
                     gameOverWindow.ResultLabel.Content = $"{winner} player won";
-                    gameOverWindow.Show();
+                    gameOverWindow.ShowDialog();
                     return;
                 }
                 else
@@ -164,8 +192,6 @@ namespace WpfApp
         /// <summary>
         /// moves figure if it is possible
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MoveButton_Click(object sender, RoutedEventArgs e)
         {
             game.Move(StartTextBox.Text, TargetTextBox.Text);
@@ -234,19 +260,38 @@ namespace WpfApp
         /// <summary>
         /// starts a new game
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         public void NewGame_Click(object sender, RoutedEventArgs e)
         {
-            game = new AutoGame();
-            CreateWindow();
-            PutFigures();
+            NewGame newGameWindow = new();
+            newGameWindow.ShowDialog();
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Saves game when closing main window, game saves if there are not finished and at least one step is played
+        /// </summary>
+        private void Chees_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Window window = new AddFigures();
-            window.ShowDialog();
+            if (game is null)
+                return;
+            int i = 0;
+            string s=string.Empty;
+            if (game is AutoGame autoGame)
+            {
+                i = 1;
+                s = autoGame.autoPlayerColor.ToString();
+            }
+            game.Save(i,s);
+        }
+
+        /// <summary>
+        /// Closes all open windows when closed main window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Chees_Closed(object sender, EventArgs e)
+        {
+            foreach (Window item in Application.Current.Windows)
+                item.Close();
         }
     }
 }

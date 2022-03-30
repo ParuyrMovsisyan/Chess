@@ -46,5 +46,38 @@ namespace ChessLibrary
             }
             return index;
         }
+
+        /// <summary>
+        /// changes board to string
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns></returns>
+        public static string ArrayToString(this char[,] board)
+        {
+            StringBuilder sb = new StringBuilder(64);
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    sb.Append(board[i, j]);
+                }
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// gets board from string
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static char[,] StringToArray(this string s)
+        {
+            char[,] result = new char[8, 8];
+            for (int i = 0; i < 64; i++)
+            {
+                result[i / 8, i % 8]= s[i];
+            }
+            return result;
+        }
     }
 }

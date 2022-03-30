@@ -4,9 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp"
-        xmlns:ChessLibrary="clr-namespace:ChessLibrary;assembly=ChessLibrary" x:Class="WpfApp.AddFigures"
+        xmlns:ChessLibrary="clr-namespace:ChessLibrary;assembly=ChessLibrary" x:Class="WpfApp.CustomGameWindow"
         mc:Ignorable="d"
-        Title="AddFigures" Height="450" Width="800">
+        Title="AddFigures" Height="450" Width="800" Closed="Window_Closed">
     <Grid x:Name="MainGrid" MouseLeftButtonDown="Grid_MouseLeftButtonDown">
         <Button x:Name="StartGameButton" Content="Start game" HorizontalAlignment="Left" Margin="696,279,0,0" VerticalAlignment="Top" Click="StartGameButton_Click"/>
         <Button x:Name="AddButton" Content="Add" HorizontalAlignment="Left" Margin="714,104,0,0" VerticalAlignment="Top" Click="AddButton_Click"/>
@@ -34,5 +34,15 @@
         </ComboBox>
         <Label Content="Choose who will&#xD;&#xA; start a game" HorizontalAlignment="Left" Margin="435,265,0,0" VerticalAlignment="Top" Width="102" Height="49"/>
 
+        <Label x:Name="ColorLabel" Content="Choose Your color..." HorizontalAlignment="Left" Margin="441,224,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+        <Label Content="Choose game type&#xD;&#xA;" HorizontalAlignment="Left" Margin="444,174,0,0" VerticalAlignment="Top" Height="26"/>
+        <ComboBox x:Name="GameType" HorizontalAlignment="Left" Margin="593,178,0,0" VerticalAlignment="Top" Width="130" SelectionChanged="GameType_SelectionChanged">
+            <ComboBoxItem Content="2 Players" IsSelected="True"/>
+            <ComboBoxItem Content="Play with computer"/>
+        </ComboBox>
+        <ComboBox x:Name="Color" HorizontalAlignment="Left" Margin="593,228,0,0" VerticalAlignment="Top" Width="130" Visibility="Hidden">
+            <ComboBoxItem Content="White"/>
+            <ComboBoxItem Content="Black"/>
+        </ComboBox>
     </Grid>
 </Window>
