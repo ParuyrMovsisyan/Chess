@@ -529,6 +529,11 @@ namespace ChessLibrary
             return isTime;
         }
 
+
+        /// <summary>
+        /// checks is there draw
+        /// </summary>
+        /// <returns>true if draw, false otherwise</returns>
         public bool IsDraw()
         {
             if (Moves.Count >= 12) // when a position is reached (or is about to be reached) at least three times in the same game.
@@ -613,12 +618,12 @@ namespace ChessLibrary
                 bool isNotTrue = false;
                 for (int i = 1; i < 51; i++)
                 {
-                    if (Moves[Moves.Count - i].FigureSymbol == '\u2659' || Moves[Moves.Count - i].FigureSymbol == '\u265F')
+                    if (Moves[^i].FigureSymbol == '\u2659' || Moves[^i].FigureSymbol == '\u265F')
                     {
                         isNotTrue = true;
                         break;
                     }
-                    if ((int)Moves[Moves.Count - i].EatenFigureSymbol >= 9812 && (int)Moves[Moves.Count - i].EatenFigureSymbol <= 9823)
+                    if (Moves[^i].EatenFigureSymbol >= 9812 && Moves[^i].EatenFigureSymbol <= 9823)
                     {
                         isNotTrue = true;
                         break;

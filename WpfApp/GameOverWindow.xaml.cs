@@ -33,8 +33,8 @@ namespace WpfApp
         private void NewGameButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow w=(MainWindow)App.Current.MainWindow;
-            w.NewGame_Click(new Object(),new RoutedEventArgs());
-            this.Close();
+            w.NewGame_Click(new object(),new RoutedEventArgs());
+            Close();
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace WpfApp
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
-            this.Close();
+            Close();
         }
     }
 }

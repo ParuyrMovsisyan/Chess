@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace WpfApp
 {
+    /// <summary>
+    /// enum for chessboard's letters
+    /// </summary>
     internal enum LettersEnum
     {
         A,

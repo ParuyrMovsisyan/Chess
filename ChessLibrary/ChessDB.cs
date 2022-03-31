@@ -22,7 +22,7 @@ namespace ChessLibrary
             string conString = ConfigurationManager.ConnectionStrings["ChessDB"].ConnectionString;
             using (var con = new SqlConnection(conString))
             {
-                SqlCommand cmd = new SqlCommand("TRUNCATE TABLE BoardHistory; " +
+                SqlCommand cmd = new ("TRUNCATE TABLE BoardHistory; " +
                                                 "TRUNCATE TABLE Figures; " +
                                                 "TRUNCATE TABLE FiguresMovesHistory; " +
                                                 "TRUNCATE TABLE MovesHistory; " +
@@ -143,7 +143,7 @@ namespace ChessLibrary
             var chessboard = new Chessboard(figurs);
             chessboard.History.AddRange(GetBoardHistory());
             chessboard.Moves.AddRange(GetMovesHistory());
-            chessboard.WhoseMoves=chessboard.History[chessboard.History.Count-1].whoseTurn==FigureColorEnum.White?
+            chessboard.WhoseMoves=chessboard.History[^1].whoseTurn==FigureColorEnum.White?
                                     FigureColorEnum.Black:FigureColorEnum.White;
             DeleteSavedGame();
             return chessboard;
@@ -155,7 +155,7 @@ namespace ChessLibrary
         /// <returns>list of figures</returns>
         static List<Figure> GetFigures()
         {
-            List<Figure> figures = new List<Figure>();
+            List<Figure> figures = new ();
             string conString = ConfigurationManager.ConnectionStrings["ChessDB"].ConnectionString;
             conString += ";MultipleActiveResultSets = True";
             using (var con = new SqlConnection(conString))
@@ -172,8 +172,10 @@ namespace ChessLibrary
                                                          "WHERE figureID=@figurID" +
                                                          " ORDER BY ID", con))
                         {
-                            var figurID = new SqlParameter("@figurID", SqlDbType.Int);
-                            figurID.Value = reader.GetInt32("ID");
+                            SqlParameter figurID = new ("@figurID", SqlDbType.Int)
+                            {
+                                Value = reader.GetInt32("ID")
+                            };
                             cmd1.Parameters.Add(figurID);
                             var reader1 = cmd1.ExecuteReader();
                             while (reader1.Read())

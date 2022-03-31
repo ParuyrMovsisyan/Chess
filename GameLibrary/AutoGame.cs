@@ -64,7 +64,7 @@ namespace GameLibrary
             List<PossibleMove> possibleMoves = new();
             List<Figure> canBeEaten = new();
             Chessboard fakeChessboard;
-            PossibleMove myMove = null;
+            PossibleMove? myMove = null;
             foreach (Figure figure in Chessboard.GetFriendFigures(autoPlayerColor))
             {
                 if (figure.CanBeEaten(Chessboard))
@@ -118,7 +118,7 @@ namespace GameLibrary
                         foreach (var item in canBeEaten)
                         {
                             var posMoves = possibleMoves.Where(e => e.StartPoint == item.Position).ToList();
-                            if (posMoves.Count() > 0)
+                            if (posMoves.Count > 0)
                             {
                                 var query1 = (from e in posMoves
                                               where e.EffectiveWeight == posMoves.Max(e => e.EffectiveWeight)
@@ -130,15 +130,15 @@ namespace GameLibrary
                         {
                             PossibleMove posMove;
 
-                            if (inDangerFigureMoves.Count() > 1)
+                            if (inDangerFigureMoves.Count > 1)
                             {
                                 inDangerFigureMoves = (from e in inDangerFigureMoves
                                                        where e.EffectiveWeight == inDangerFigureMoves.Max(x => x.EffectiveWeight)
                                                        select e).ToList();
-                                if (inDangerFigureMoves.Count() > 1)
+                                if (inDangerFigureMoves.Count > 1)
                                 {
                                     Random random = new();
-                                    int i = random.Next(0, inDangerFigureMoves.Count());
+                                    int i = random.Next(0, inDangerFigureMoves.Count);
                                     posMove = inDangerFigureMoves.ElementAt(i);
                                 }
                                 else
@@ -182,8 +182,8 @@ namespace GameLibrary
         /// <summary>
         /// choose a one move to play
         /// </summary>
-        /// <param name="possibleMoves"></param>
-        /// <returns></returns>
+        /// <param name="possibleMoves">list of possible moves</param>
+        /// <returns>rundom choosen one move from most effective possible moves</returns>
         PossibleMove ChooseWhatToPlay(List<PossibleMove> possibleMoves)
         {            
             Chessboard fakeChessboard ;

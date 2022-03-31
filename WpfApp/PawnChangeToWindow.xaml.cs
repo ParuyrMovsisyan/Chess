@@ -16,7 +16,7 @@ namespace WpfApp
 {
     /// <summary>
     /// Interaction logic for PawnChangeTo.xaml
-    /// This window foe promotion pawn
+    /// This window for choosing pawn exchange to what when promotion time
     /// </summary>
     public partial class PawnChangeToWindow : Window
     {
@@ -25,32 +25,44 @@ namespace WpfApp
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Event for Queen butten, changes pawn to queen
+        /// </summary>
         private void QueenButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow w = (MainWindow)App.Current.MainWindow;
             w.Game.PawnPromotionTo("Queen");
-            this.Close();
+            Close();
         }
 
+        /// <summary>
+        /// Event for Rook butten, changes pawn to rook
+        /// </summary>
         private void RookButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow w = (MainWindow)App.Current.MainWindow;
             w.Game.PawnPromotionTo("Rook");
-            this.Close();
+            Close();
         }
 
+        /// <summary>
+        /// Event for Knight butten, changes pawn to knight
+        /// </summary>
         private void KnightButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow w = (MainWindow)App.Current.MainWindow;
             w.Game.PawnPromotionTo("Knight");
-            this.Close();
+            Close();
         }
 
+        /// <summary>
+        /// Event for Bishop butten, changes pawn to bishop
+        /// </summary>
         private void BishopButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow w = (MainWindow)App.Current.MainWindow;
             w.Game.PawnPromotionTo("Bishop");
-            this.Close();
+            Close();
         }
     }
 }

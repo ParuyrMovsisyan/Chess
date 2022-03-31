@@ -16,7 +16,7 @@ using GameLibrary;
 namespace WpfApp
 {
     /// <summary>
-    /// Interaction logic for NewGame.xaml
+    /// Interaction logic for NewGame.xaml. Window foer choosing new game options
     /// </summary>
     public partial class NewGame : Window
     {
@@ -28,8 +28,6 @@ namespace WpfApp
         /// <summary>
         /// Starts a new game
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void StartGameButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow w = (MainWindow)App.Current.MainWindow;
@@ -42,7 +40,7 @@ namespace WpfApp
                 w.Game = new Game();
                 w.CreateWindow();
                 w.PutFigures();
-                this.Close();
+                Close();
             }
             else
             {
@@ -62,7 +60,7 @@ namespace WpfApp
                     }
                     w.CreateWindow();
                     w.PutFigures();
-                    this.Close();
+                    Close();
                 } 
             }
         }
@@ -70,8 +68,6 @@ namespace WpfApp
         /// <summary>
         /// if selected Play with computer visibles combo box for chossing color
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void GameType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (GameType.Text == "2 Players")
@@ -86,11 +82,14 @@ namespace WpfApp
             }
         }
 
+        /// <summary>
+        /// event for Create custom game button, opens window for choosing custom game options
+        /// </summary>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            CustomGameWindow game = new CustomGameWindow();
+            CustomGameWindow game = new ();
             game.ShowDialog();
-            this.Close();
+            Close();
         }
     }
 }

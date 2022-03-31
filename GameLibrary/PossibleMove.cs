@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ChessLibrary;
+﻿using ChessLibrary;
 
 namespace GameLibrary
 {
+    /// <summary>
+    /// class for possible move. 
+    /// Contains information about mov's starting position, targetposition,
+    /// enemy's weight if move's result is to eat enemy's figure, moving figure weight and effective weight
+    /// </summary>
     internal class PossibleMove
     {
         /// <summary>

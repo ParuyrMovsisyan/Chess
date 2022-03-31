@@ -24,18 +24,17 @@ namespace WpfApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Game game;
         public Game Game
         {
-            get { return game; }
-            set { game = value; }
+            get; set;
         }
+
         public MainWindow()
         {
             InitializeComponent();
             if (IsThereSavedGame())
             {
-                ContinueWindow continueWindow = new ContinueWindow();
+                ContinueWindow continueWindow = new();
                 continueWindow.ShowDialog();
             }
             else
@@ -45,28 +44,28 @@ namespace WpfApp
             }
         }
 
-        public MainWindow(Game game)
-        {
-            InitializeComponent();
-            this.game = game;            
-            CreateWindow();
-            PutFigures();
-        }
+        //public MainWindow(Game game)
+        //{
+        //    InitializeComponent();
+        //    Game = game;            
+        //    CreateWindow();
+        //    PutFigures();
+        //}
 
         /// <summary>
         /// checks is there saved game inn database
         /// </summary>
         /// <returns></returns>
-        bool IsThereSavedGame()
+        private static bool IsThereSavedGame()
         {
             string conString = ConfigurationManager.ConnectionStrings["ChessDB"].ConnectionString;
-            using (var con = new SqlConnection(conString))
+            using (SqlConnection con = new (conString))
             {
                 string commandText = "Select isAutoGame FROM Game;";
-                using (var cmd = new SqlCommand(commandText, con))
+                using (SqlCommand cmd = new (commandText, con))
                 {
                     con.Open();
-                    var reader=cmd.ExecuteReader();
+                    SqlDataReader reader = cmd.ExecuteReader();
                     return reader.HasRows;
                 }
             }
@@ -77,7 +76,7 @@ namespace WpfApp
         /// </summary>
         public void PutFigures()
         {
-            char[,] board = game.GetBoard();
+            char[,] board = Game.GetBoard();
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -108,12 +107,12 @@ namespace WpfApp
                 {
                     if (StartTextBox.Text == string.Empty)
                     {
-                        if (game.IsRightChosen(pos))
+                        if (Game.IsRightChosen(pos))
                         {
                             StartTextBox.Text = pos;
-                            ChoosenFigureLabel.Content=Game.GetBoard()[position.X, position.Y]+" "+pos;
+                            ChoosenFigureLabel.Content = Game.GetBoard()[position.X, position.Y] + " " + pos;
                         }
-                            
+
                     }
                     else
                     {
@@ -125,29 +124,33 @@ namespace WpfApp
                         }
                     }
                 }
-            }            
+            }
         }
-        void Move()
+        private void Move()
         {
-            if (game is AutoGame autogame)
+            if (Game is AutoGame autogame)
             {
                 if (autogame.WhoseMoves != autogame.autoPlayerColor.ToString())
-                    game.Move(StartTextBox.Text, TargetTextBox.Text);
+                {
+                    Game.Move(StartTextBox.Text, TargetTextBox.Text);
+                }
                 else
                 {
-                    autogame.Think();                    
+                    autogame.Think();
                 }
             }
             else
             {
-                game.Move(StartTextBox.Text, TargetTextBox.Text);
+                Game.Move(StartTextBox.Text, TargetTextBox.Text);
             }
-            if (game.IsTimeToPromotionPawn)
+            if (Game.IsTimeToPromotionPawn)
             {
-                if (game is AutoGame autogame1)
+                if (Game is AutoGame autogame1)
                 {
-                    if(autogame1.autoPlayerColor.ToString() != autogame1.WhoseMoves)
-                        game.PawnPromotionTo("Queen");
+                    if (autogame1.autoPlayerColor.ToString() != autogame1.WhoseMoves)
+                    {
+                        Game.PawnPromotionTo("Queen");
+                    }                        
                     else
                     {
                         PawnChangeToWindow window = new();
@@ -161,17 +164,21 @@ namespace WpfApp
                 }
             }
             CreateWindow();
-            if (game.IsUnderCheck())
+            if (Game.IsUnderCheck())
             {
-                if (game.IsCheckmate())
+                if (Game.IsCheckmate())
                 {
                     SystemSounds.Beep.Play();
                     GameOverWindow gameOverWindow = new();
                     string winner;
-                    if (game.WhoseMoves == "Black")
+                    if (Game.WhoseMoves == "Black")
+                    {
                         winner = "White";
+                    }
                     else
+                    {
                         winner = "Black";
+                    }
                     gameOverWindow.ResultLabel.Content = $"{winner} player won";
                     gameOverWindow.ShowDialog();
                     return;
@@ -182,28 +189,33 @@ namespace WpfApp
                     MessageBox.Show("Check");
                 }
             }
-            else if (game.IsDraw())
+            else if (Game.IsDraw())
             {
                 SystemSounds.Beep.Play();
                 GameOverWindow gameOverWindow = new();
                 gameOverWindow.ResultLabel.Content = "Draw";
                 gameOverWindow.Show();
             }
-            if (game is AutoGame autoGame)
+            if (Game is AutoGame autoGame)
+            {
                 if (autoGame.WhoseMoves == autoGame.autoPlayerColor.ToString())
+                {
                     Move();
+                }
+            }
+               
         }
         /// <summary>
         /// moves figure if it is possible
         /// </summary>
         private void MoveButton_Click(object sender, RoutedEventArgs e)
         {
-            game.Move(StartTextBox.Text, TargetTextBox.Text);
-            if (game.IsTimeToPromotionPawn)
+            Game.Move(StartTextBox.Text, TargetTextBox.Text);
+            if (Game.IsTimeToPromotionPawn)
             {
-                if (game is AutoGame)
+                if (Game is AutoGame)
                 {
-                    game.PawnPromotionTo("Queen");
+                    Game.PawnPromotionTo("Queen");
                 }
                 else
                 {
@@ -212,17 +224,21 @@ namespace WpfApp
                 }
             }
             CreateWindow();
-            if (game.IsUnderCheck())
+            if (Game.IsUnderCheck())
             {
-                if (game.IsCheckmate())
+                if (Game.IsCheckmate())
                 {
                     SystemSounds.Beep.Play();
                     GameOverWindow gameOverWindow = new();
                     string winner;
-                    if (game.WhoseMoves == "Black")
+                    if (Game.WhoseMoves == "Black")
+                    {
                         winner = "White";
+                    }
                     else
+                    {
                         winner = "Black";
+                    }
                     gameOverWindow.ResultLabel.Content = $"{winner} player won";
                     gameOverWindow.Show();
                 }
@@ -232,7 +248,7 @@ namespace WpfApp
                     MessageBox.Show("Check");
                 }
             }
-            else if (game.IsDraw())
+            else if (Game.IsDraw())
             {
                 SystemSounds.Beep.Play();
                 GameOverWindow gameOverWindow = new();
@@ -246,8 +262,8 @@ namespace WpfApp
         /// </summary>
         public void CreateWindow()
         {
-            StartTextBox.Text = String.Empty;
-            TargetTextBox.Text = String.Empty;
+            StartTextBox.Text = string.Empty;
+            TargetTextBox.Text = string.Empty;
             ChoosenFigureLabel.Content = string.Empty;
             Grid1.Children.Clear();
             Grid1.Children.Add(Menu);
@@ -255,9 +271,9 @@ namespace WpfApp
             Grid1.Children.Add(ChoosenFigureLabel);
             Grid1.Children.Add(MovesHeadLabel);
             Grid1.Children.Add(MoveLabel);
-            Grid1.Children.Add(movesLabel);
-            movesLabel.Content = Game.GetMoves();
-            WhoseMovesTextBlock.Text = game.WhoseMoves + "\'s turn";
+            Grid1.Children.Add(TextBox);
+            TextBox.Text = Game.GetMoves();
+            WhoseMovesTextBlock.Text = Game.WhoseMoves + "\'s turn";
             Grid1.Children.Add(WhoseMovesTextBlock);
             PutFigures();
         }
@@ -276,27 +292,29 @@ namespace WpfApp
         /// </summary>
         private void Chees_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (game is null)
+            if (Game is null)
+            {
                 return;
+            }
             int i = 0;
-            string s=string.Empty;
-            if (game is AutoGame autoGame)
+            string s = string.Empty;
+            if (Game is AutoGame autoGame)
             {
                 i = 1;
                 s = autoGame.autoPlayerColor.ToString();
             }
-            game.Save(i,s);
+            Game.Save(i, s);
         }
 
         /// <summary>
         /// Closes all open windows when closed main window
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Chees_Closed(object sender, EventArgs e)
         {
             foreach (Window item in Application.Current.Windows)
+            {
                 item.Close();
+            }
         }
     }
 }

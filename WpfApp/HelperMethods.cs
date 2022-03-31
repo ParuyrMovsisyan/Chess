@@ -16,7 +16,7 @@ namespace WpfApp
         /// </summary>
         /// <param name="c">char: figure unicode symbol</param>
         /// <returns>string: uri for gigure image</returns>
-        static string GetImgUri(char c)
+        private static string GetImgUri(char c)
         {
             string s = @"\Figures\";
             switch (c)
@@ -114,7 +114,7 @@ namespace WpfApp
         /// <returns>figure's unicode symbol</returns>
         public static char GetFigureSymbol(string name)
         {
-            var c = name switch
+            char c = name switch
             {
                 "White King" => '\u2654',
                 "White Queen" => '\u2655',

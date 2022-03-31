@@ -21,11 +21,17 @@ namespace ChessLibrary
         H
     }
     /// <summary>
-    /// position in chessboard. x is digital value, and y is letters enum
+    /// position in chessboard. x is digital value, and y is letter value
     /// </summary>
     public struct Point
     {
+        /// <summary>
+        /// chessboard's position's digital value
+        /// </summary>
         public int X;
+        /// <summary>
+        /// chessboard's position's letter value
+        /// </summary>
         public int Y;
 
         /// <summary>
@@ -53,7 +59,7 @@ namespace ChessLibrary
                 {                    
                     if (Enum.TryParse(pos[0].ToString(), out ChessLettersEnum e))
                     {
-                        if (Int32.TryParse(pos[1].ToString(), out int x))
+                        if (int.TryParse(pos[1].ToString(), out int x))
                         {
                             Y = (int)e;
                             if (x > 0 && x < 9)

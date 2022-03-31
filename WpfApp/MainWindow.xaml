@@ -8,10 +8,12 @@
         Title="Chess" Height="450" Width="800" Closing="Chees_Closing" Closed="Chees_Closed">
 
     <Grid x:Name="Grid1" MouseLeftButtonDown="Grid1_MouseLeftButtonDown">
-        <Menu x:Name="Menu" Height="40" Width="200" Margin="0,0,600,394" Grid.ColumnSpan="2">
+        <Menu x:Name="Menu" Background="White" >
             <MenuItem x:Name="NewGame" Header="New Game" Click="NewGame_Click" Height="20" RenderTransformOrigin="0.5,0.5" Width="69">
             </MenuItem>
+
         </Menu>
+        <TextBox x:Name="TextBox" TextWrapping="Wrap" Text="&#xD;&#xA;" Margin="640,71,0,34" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" IsReadOnly="True"/>
         <Image x:Name="ChessboardImg" HorizontalAlignment="Left" Height="352" Margin="64,48,0,0" VerticalAlignment="Top" Width="352" Source="/BlackChessboard.png" Stretch="Uniform" IsEnabled="False" Grid.Column="1"/>
         <TextBox x:Name="StartTextBox" HorizontalAlignment="Left" Margin="422,165,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Grid.Column="1" Visibility="Hidden"/>
         <TextBox x:Name="TargetTextBox" HorizontalAlignment="Left" Margin="524,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="55" Grid.Column="1" Visibility="Hidden"/>
@@ -20,7 +22,6 @@
         <Label x:Name="TargetLabel" Content="Target" HorizontalAlignment="Left" Margin="530,133,0,0" VerticalAlignment="Top" Grid.Column="1" Visibility="Hidden"/>
         <TextBlock x:Name="WhoseMovesTextBlock" HorizontalAlignment="Left" Margin="435,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="55"/>
         <Label x:Name="ChoosenFigureLabel" Content="" HorizontalAlignment="Left" Margin="435,0,0,0" VerticalAlignment="Center" Width="70" FontSize="16" FontWeight="Bold"/>
-        <Label x:Name="movesLabel" Content="" HorizontalAlignment="Left" Margin="640,56,0,0" VerticalAlignment="Top" Height="328" Width="160"/>
         <Label x:Name="MoveLabel" Content="Mves" HorizontalAlignment="Left" Margin="672,14,0,0" VerticalAlignment="Top" Width="96"/>
         <Label x:Name="MovesHeadLabel" Content="Figure  From  To  Taken" HorizontalAlignment="Left" Margin="640,40,0,0" VerticalAlignment="Top" Width="150"/>
     </Grid>

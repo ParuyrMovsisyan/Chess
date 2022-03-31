@@ -9,7 +9,13 @@ namespace WpfApp
 {
     internal readonly struct Position
     {
+        /// <summary>
+        /// row
+        /// </summary>
         public readonly int X;
+        /// <summary>
+        /// column
+        /// </summary>
         public readonly int Y;
         /// <summary>
         /// Gets chessboard position from mouse position
@@ -36,7 +42,7 @@ namespace WpfApp
                 {
                     if (Enum.TryParse(pos[0].ToString(), out LettersEnum e))
                     {
-                        if (Int32.TryParse(pos[1].ToString(), out int x))
+                        if (int.TryParse(pos[1].ToString(), out int x))
                         {
                             Y = (int)e;
                             if (x > 0 && x < 9)
@@ -48,6 +54,11 @@ namespace WpfApp
                 }
             }
         }
+
+        /// <summary>
+        /// changes given position to chessboard position: [A-H] letter and [1-8] digit
+        /// </summary>
+        /// <returns>chess position </returns>
         public override string ToString()
         {
             string s = string.Empty;

@@ -1,42 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using GameLibrary;
 
 namespace WpfApp
 {
     /// <summary>
-    /// Interaction logic for AddFigures.xaml
+    /// Interaction logic for CustomGame.xaml
+    /// Window for choosing custom game options
     /// </summary>
     public partial class CustomGameWindow : Window
     {
         /// <summary>
         /// chessboard
         /// </summary>
-        readonly char[,] board = new char[8, 8];
+        private readonly char[,] board = new char[8, 8];
         public CustomGameWindow()
         {
             InitializeComponent();
             for (int i = 0; i < 8; i++)
+            {
                 for (int j = 0; j < 8; j++)
+                {
                     board[i, j] = '\u0020';
+                }
+            }                    
         }
         
         /// <summary>
-        /// Gets position and writes it in PositionTextBox
+        /// Gets position and writes it in PositionTextBox, if mouse left button clicked on chessboard
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Point mousePos = e.GetPosition(this);
@@ -48,29 +42,28 @@ namespace WpfApp
         }
 
         /// <summary>
-        /// Adds figure to board
+        /// Adds figure to board, when clicked Add button
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             Position pos = new (PositionTextBox.Text);
             if (board[pos.X, pos.Y] == '\u0020')
-            {                
+            {
                 char symbol = HelperMethods.GetFigureSymbol(FigureComboBox.Text);
                 board[pos.X, pos.Y] = symbol;
                 Image image = HelperMethods.CreateImage(symbol, pos.X, pos.Y);
                 MainGrid.Children.Add(image);
             }
             else
+            {
                 MessageBox.Show("There are another figure");
+            }                
         }
 
         /// <summary>
-        /// Start's a new game if it is a possible, otherwise shows mistak's meesage
+        /// Event for Start game button. 
+        /// Start's a new game if it is a possible, otherwise shows mistak's meesage 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void StartGameButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -82,7 +75,7 @@ namespace WpfApp
                     w.Game = new(board, isStartingWhites);
                     w.CreateWindow();
                     w.PutFigures();
-                    this.Close();
+                    Close();
                 }
                 else
                 {
@@ -102,7 +95,7 @@ namespace WpfApp
                         }
                         w.CreateWindow();
                         w.PutFigures();
-                        this.Close();
+                        Close();
                     }
                 }
             }
@@ -129,11 +122,17 @@ namespace WpfApp
             }
         }
 
+        /// <summary>
+        /// when closed this window and ther is no any game then shut down application
+        /// </summary>
         private void Window_Closed(object sender, EventArgs e)
         {
             MainWindow w = (MainWindow)Application.Current.MainWindow;
             if (w.Game is null)
+            {
                 Application.Current.Shutdown();
+            }
+               
         }
     }
 }

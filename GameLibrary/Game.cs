@@ -124,6 +124,10 @@ namespace GameLibrary
             return Chessboard.IsDraw();
         }
 
+        /// <summary>
+        /// Gets all moves in one string, each move is separatet new lines
+        /// </summary>
+        /// <returns>all moves in one string</returns>
         public string GetMoves()
         {
             StringBuilder sb = new();

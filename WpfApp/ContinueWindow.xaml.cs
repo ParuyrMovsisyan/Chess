@@ -27,43 +27,57 @@ namespace WpfApp
             InitializeComponent();
         }
 
+        /// <summary>
+        /// event for New Game button, opens window for choosing new game options
+        /// </summary>
         private void NewGameButton_Click(object sender, RoutedEventArgs e)
         {
-            NewGame newGame = new NewGame();
+            NewGame newGame = new ();
             newGame.Show();
-            this.Close();
+            Close();
         }
 
+        /// <summary>
+        /// Event for Continue button. Continues saved game
+        /// </summary>
         private void ContinueButton_Click(object sender, RoutedEventArgs e)
         {
-            var main = (MainWindow)Application.Current.MainWindow;
+            MainWindow main = (MainWindow)Application.Current.MainWindow;
             if (IsAutoGame(out int autoPlayer))
             {
                 main.Game = new AutoGame(autoPlayer, true);
             }
             else
+            {
                 main.Game = new Game(true);
+            }
             main.CreateWindow();
             main.PutFigures();
-            this.Close();
+            Close();
         }
-        bool IsAutoGame(out int autoPlayer)
+
+        /// <summary>
+        /// Cheks is saved game was playing with computer
+        /// </summary>
+        private static bool IsAutoGame(out int autoPlayer)
         {
             string conString = ConfigurationManager.ConnectionStrings["ChessDB"].ConnectionString;
-            using (var con = new SqlConnection(conString))
+            using (SqlConnection con = new (conString))
             {
                 string commandText = "Select isAutoGame, autoPlayerColor FROM Game;";
-                using (var cmd = new SqlCommand(commandText, con))
+                using (SqlCommand cmd = new (commandText, con))
                 {
                     con.Open();
-                    var reader = cmd.ExecuteReader();
+                    SqlDataReader reader = cmd.ExecuteReader();
                     reader.Read();
                     if (reader.GetString(1) == "Black")
                     {
                         autoPlayer = 1;
                     }
                     else
+                    {
                         autoPlayer = 0;
+                    }
                     return reader.GetBoolean(0);
                 }
             }
