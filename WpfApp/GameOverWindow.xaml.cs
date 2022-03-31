@@ -28,8 +28,6 @@ namespace WpfApp
         /// <summary>
         /// starts new game
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void NewGameButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow w=(MainWindow)App.Current.MainWindow;
@@ -45,7 +43,6 @@ namespace WpfApp
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
-            Close();
         }
     }
 }

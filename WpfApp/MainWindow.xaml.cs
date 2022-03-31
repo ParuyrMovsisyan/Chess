@@ -190,7 +190,8 @@ namespace WpfApp
                 SystemSounds.Beep.Play();
                 GameOverWindow gameOverWindow = new();
                 gameOverWindow.ResultLabel.Content = "Draw";
-                gameOverWindow.Show();
+                gameOverWindow.ShowDialog();
+                return;
             }
             if (Game is AutoGame autoGame)
             {
