@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace ChessLibrary
 {
     /// <summary>
     /// class for Bishop. implements Figures abstract class
     /// </summary>
     public sealed class Bishop : Figure
-    {
-        
+    {        
         /// <summary>
         /// Constructor
         /// </summary>

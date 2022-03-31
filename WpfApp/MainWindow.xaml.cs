@@ -42,15 +42,7 @@ namespace WpfApp
                 NewGame newGameWindow = new();
                 newGameWindow.ShowDialog();
             }
-        }
-
-        //public MainWindow(Game game)
-        //{
-        //    InitializeComponent();
-        //    Game = game;            
-        //    CreateWindow();
-        //    PutFigures();
-        //}
+        }                
 
         /// <summary>
         /// checks is there saved game inn database
@@ -126,6 +118,10 @@ namespace WpfApp
                 }
             }
         }
+
+        /// <summary>
+        /// moves figure if it is possible
+        /// </summary>
         private void Move()
         {
             if (Game is AutoGame autogame)
@@ -202,60 +198,8 @@ namespace WpfApp
                 {
                     Move();
                 }
-            }
-               
-        }
-        /// <summary>
-        /// moves figure if it is possible
-        /// </summary>
-        private void MoveButton_Click(object sender, RoutedEventArgs e)
-        {
-            Game.Move(StartTextBox.Text, TargetTextBox.Text);
-            if (Game.IsTimeToPromotionPawn)
-            {
-                if (Game is AutoGame)
-                {
-                    Game.PawnPromotionTo("Queen");
-                }
-                else
-                {
-                    PawnChangeToWindow window = new();
-                    window.ShowDialog();
-                }
-            }
-            CreateWindow();
-            if (Game.IsUnderCheck())
-            {
-                if (Game.IsCheckmate())
-                {
-                    SystemSounds.Beep.Play();
-                    GameOverWindow gameOverWindow = new();
-                    string winner;
-                    if (Game.WhoseMoves == "Black")
-                    {
-                        winner = "White";
-                    }
-                    else
-                    {
-                        winner = "Black";
-                    }
-                    gameOverWindow.ResultLabel.Content = $"{winner} player won";
-                    gameOverWindow.Show();
-                }
-                else
-                {
-                    SystemSounds.Beep.Play();
-                    MessageBox.Show("Check");
-                }
-            }
-            else if (Game.IsDraw())
-            {
-                SystemSounds.Beep.Play();
-                GameOverWindow gameOverWindow = new();
-                gameOverWindow.ResultLabel.Content = "Draw";
-                gameOverWindow.Show();
-            }
-        }
+            }               
+        }        
 
         /// <summary>
         /// recrates a Grid1

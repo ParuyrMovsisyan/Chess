@@ -17,7 +17,6 @@
         <Image x:Name="ChessboardImg" HorizontalAlignment="Left" Height="352" Margin="64,48,0,0" VerticalAlignment="Top" Width="352" Source="/BlackChessboard.png" Stretch="Uniform" IsEnabled="False" Grid.Column="1"/>
         <TextBox x:Name="StartTextBox" HorizontalAlignment="Left" Margin="422,165,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Grid.Column="1" Visibility="Hidden"/>
         <TextBox x:Name="TargetTextBox" HorizontalAlignment="Left" Margin="524,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="55" Grid.Column="1" Visibility="Hidden"/>
-        <Button x:Name="MoveButton" Content="Move" HorizontalAlignment="Left" Margin="488,197,0,0" VerticalAlignment="Top" Click="MoveButton_Click" Grid.Column="1" Visibility="Hidden"/>
         <Label x:Name="StartLabel" Content="Start" HorizontalAlignment="Left" Margin="435,133,0,0" VerticalAlignment="Top" Grid.Column="1" Visibility="Hidden"/>
         <Label x:Name="TargetLabel" Content="Target" HorizontalAlignment="Left" Margin="530,133,0,0" VerticalAlignment="Top" Grid.Column="1" Visibility="Hidden"/>
         <TextBlock x:Name="WhoseMovesTextBlock" HorizontalAlignment="Left" Margin="435,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="55"/>
