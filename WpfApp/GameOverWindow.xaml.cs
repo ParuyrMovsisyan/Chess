@@ -38,8 +38,6 @@ namespace WpfApp
         /// <summary>
         /// Exits from game
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();

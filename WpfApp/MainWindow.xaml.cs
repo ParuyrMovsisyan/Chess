@@ -213,6 +213,7 @@ namespace WpfApp
             Grid1.Children.Clear();
             Grid1.Children.Add(Menu);
             Grid1.Children.Add(ChessboardImg);
+            Grid1.Children.Add(ChoosenFigure);
             Grid1.Children.Add(ChoosenFigureLabel);
             Grid1.Children.Add(MovesHeadLabel);
             Grid1.Children.Add(MoveLabel);
