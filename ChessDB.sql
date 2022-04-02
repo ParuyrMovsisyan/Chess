@@ -1,0 +1,49 @@
+DROP DATABASE IF EXISTS ChessDB;
+GO
+
+CREATE DATABASE ChessDB;
+GO
+USE ChessDB;
+
+CREATE TABLE Figures
+(
+	ID INT PRIMARY KEY,
+	symbol NCHAR(1) NOT NULL,
+	position NCHAR(2) NOT NULL
+);
+GO
+
+CREATE TABLE FiguresMovesHistory
+(
+	ID INT PRIMARY KEY IDENTITY(1,1),
+	figureID INT NOT NULL,
+	PreviousPosition NCHAR(2) NOT NULL
+);
+GO
+
+
+CREATE TABLE MovesHistory
+(
+	ID INT PRIMARY KEY IDENTITY(1,1),
+	FigureSymbol NCHAR(1) NOT NULL,
+	StartPos NCHAR(2) NOT NULL,
+	EndPos NCHAR(2) NOT NULL,
+	EatenFigureSymbol NCHAR(1) NOT NULL
+);
+GO
+
+CREATE TABLE BoardHistory
+(
+	ID INT PRIMARY KEY IDENTITY(1,1),
+	board NCHAR(64) NOT NULL,
+	whoseTurn CHAR(5) NOT NULL
+);
+GO
+
+CREATE TABLE GAME
+(
+	ID INT PRIMARY KEY IDENTITY(1,1),
+	isAutoGame BIT NOT NULL,
+	autoPlayerColor VARCHAR(5)
+);
+GO
